@@ -8,7 +8,7 @@ if(NOT VERSION)
 endif()
 
 project(
-  caffa-logger
+  caffaLogger
   VERSION ${VERSION}
   DESCRIPTION "Caffa Logging Library")
 

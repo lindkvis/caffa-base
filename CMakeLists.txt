@@ -1,0 +1,47 @@
+cmake_minimum_required(VERSION 3.15)
+
+include(cmake/VersionFromGit.cmake)
+version_from_git(LOG OFF INCLUDE_HASH ON TIMESTAMP "%Y%m%d%H%M%S")
+
+if(NOT VERSION)
+  set(VERSION 0.0.0)
+endif()
+
+project(
+  caffa-logger
+  VERSION ${VERSION}
+  DESCRIPTION "Caffa Logging Library")
+
+message(STATUS "Building ${PROJECT_NAME} version ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}-${GIT_HASH}")
+
+set(CMAKE_CXX_STANDARD 17)
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+set(PUBLIC_HEADERS cafLogger.h)
+set(PROJECT_FILES cafLogger.cpp)
+
+if(CAFFA_BUILD_SHARED)
+  message(STATUS "Building ${PROJECT_NAME} shared")
+  add_library(${PROJECT_NAME} SHARED ${PROJECT_FILES})
+else()
+  add_library(${PROJECT_NAME} STATIC ${PROJECT_FILES})
+endif()
+
+set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${CMAKE_PROJECT_VERSION})
+set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION ${CMAKE_PROJECT_VERSION_MAJOR})
+set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${PUBLIC_HEADERS}")
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+target_link_libraries(${PROJECT_NAME})
+
+install(
+  TARGETS ${PROJECT_NAME}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+source_group("" FILES ${PROJECT_FILES})
+

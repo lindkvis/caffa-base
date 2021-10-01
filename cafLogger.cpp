@@ -48,7 +48,7 @@ void Logger::log( Level level, const std::string& message, char const* function,
 
     auto threadId     = std::this_thread::get_id();
     auto threadNameIt = s_threadNames.find( threadId );
-    auto threadName   = threadNameIt != s_threadNames.end() ? threadNameIt->second : "";
+    auto threadName   = threadNameIt != s_threadNames.end() ? threadNameIt->second : "UNKNOWN_THREAD";
 
     if ( level >= s_applicationLogLevel )
     {

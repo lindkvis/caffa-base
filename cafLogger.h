@@ -25,6 +25,7 @@
 #include <mutex>
 #include <sstream>
 #include <string>
+#include <thread>
 
 namespace caffa
 {
@@ -50,11 +51,15 @@ public:
     static void        setLogFile( const std::string& logFile );
     static std::map<Level, std::string> logLevels();
 
+    static void registerThreadName( const std::string& name );
+
 private:
     static Level                         s_applicationLogLevel;
     static std::unique_ptr<std::ostream> s_stream;
 
     static std::mutex s_mutex;
+
+    static std::map<std::thread::id, std::string> s_threadNames;
 };
 
 } // namespace caffa

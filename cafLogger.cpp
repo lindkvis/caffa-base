@@ -28,9 +28,10 @@
 
 using namespace caffa;
 
-Logger::Level                 Logger::s_applicationLogLevel = Logger::Level::WARNING;
-std::unique_ptr<std::ostream> Logger::s_stream              = std::make_unique<std::ostream>( std::cout.rdbuf() );
-std::mutex                    Logger::s_mutex;
+Logger::Level                          Logger::s_applicationLogLevel = Logger::Level::WARNING;
+std::unique_ptr<std::ostream>          Logger::s_stream = std::make_unique<std::ostream>( std::cout.rdbuf() );
+std::mutex                             Logger::s_mutex;
+std::map<std::thread::id, std::string> Logger::s_threadNames;
 
 void Logger::log( Level level, const std::string& message, char const* function, char const* file, int line )
 {
@@ -45,6 +46,10 @@ void Logger::log( Level level, const std::string& message, char const* function,
 
     const std::time_t t_now = std::chrono::system_clock::to_time_t( now );
 
+    auto threadId     = std::this_thread::get_id();
+    auto threadNameIt = s_threadNames.find( threadId );
+    auto threadName   = threadNameIt != s_threadNames.end() ? threadNameIt->second : "";
+
     if ( level >= s_applicationLogLevel )
     {
         // TODO: should provide platform specific path delimiter
@@ -54,7 +59,13 @@ void Logger::log( Level level, const std::string& message, char const* function,
         fileName            = !fileComponents.empty() ? fileComponents.front() : fileName;
         *s_stream << "[" << std::put_time( std::localtime( &t_now ), "%F %T." ) << std::setfill( '0' ) << std::setw( 3 )
                   << ms_since_last_s.count() << "] [" << logLevelLabel( level ) << "] " << fileName << "::" << function
-                  << "[" << line << "]: " << message << std::endl;
+                  << "[" << line << "]";
+        if ( !threadName.empty() )
+        {
+            *s_stream << "{" << threadName << "}";
+        }
+
+        *s_stream << ": " << message << std::endl;
     }
 }
 
@@ -95,4 +106,10 @@ std::map<Logger::Level, std::string> Logger::logLevels()
              { Level::WARNING, "warning" },
              { Level::ERROR, "error" },
              { Level::CRITICAL, "critical" } };
+}
+
+void Logger::registerThreadName( const std::string& name )
+{
+    std::scoped_lock lock( s_mutex );
+    s_threadNames.insert( std::make_pair( std::this_thread::get_id(), name ) );
 }

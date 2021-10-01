@@ -53,6 +53,8 @@ public:
 private:
     static Level                         s_applicationLogLevel;
     static std::unique_ptr<std::ostream> s_stream;
+
+    static std::mutex s_mutex;
 };
 
 } // namespace caffa

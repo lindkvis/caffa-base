@@ -111,5 +111,5 @@ std::map<Logger::Level, std::string> Logger::logLevels()
 void Logger::registerThreadName( const std::string& name )
 {
     std::scoped_lock lock( s_mutex );
-    s_threadNames.insert( std::make_pair( std::this_thread::get_id(), name ) );
+    s_threadNames[std::this_thread::get_id()] = name;
 }

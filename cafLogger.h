@@ -34,7 +34,6 @@ class Logger
 public:
     enum class Level
     {
-        OFF,
         CRITICAL,
         ERROR,
         WARNING,

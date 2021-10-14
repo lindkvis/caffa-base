@@ -21,6 +21,7 @@
 
 #include "cafStringTools.h"
 
+#include <assert.h>
 #include <chrono>
 #include <fstream>
 #include <iomanip>
@@ -89,7 +90,8 @@ Logger::Level Logger::logLevelFromLabel( const std::string& label )
     {
         if ( levelLabel == label ) return level;
     }
-    return Logger::Level::OFF;
+    assert( false );
+    return Logger::Level::CRITICAL;
 }
 
 void Logger::setLogFile( const std::string& logFile )
@@ -99,8 +101,7 @@ void Logger::setLogFile( const std::string& logFile )
 
 std::map<Logger::Level, std::string> Logger::logLevels()
 {
-    return { { Level::OFF, "off" },
-             { Level::TRACE, "trace" },
+    return { { Level::TRACE, "trace" },
              { Level::DEBUG, "debug" },
              { Level::INFO, "info" },
              { Level::WARNING, "warning" },

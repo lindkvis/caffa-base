@@ -34,13 +34,13 @@ class Logger
 public:
     enum class Level
     {
-        TRACE,
-        DEBUG,
-        INFO,
-        WARNING,
-        ERROR,
+        OFF,
         CRITICAL,
-        OFF
+        ERROR,
+        WARNING,
+        INFO,
+        DEBUG,
+        TRACE
     };
 
     static void        log( Level level, const std::string& message, char const* function, char const* file, int line );

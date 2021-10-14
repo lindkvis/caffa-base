@@ -50,7 +50,7 @@ void Logger::log( Level level, const std::string& message, char const* function,
     auto threadNameIt = s_threadNames.find( threadId );
     auto threadName   = threadNameIt != s_threadNames.end() ? threadNameIt->second : "UNKNOWN_THREAD";
 
-    if ( level >= s_applicationLogLevel )
+    if ( level <= s_applicationLogLevel )
     {
         // TODO: should provide platform specific path delimiter
         auto filePath       = caffa::StringTools::split( file, "/" );

@@ -33,19 +33,20 @@ Logger::Level                          Logger::s_applicationLogLevel = Logger::L
 std::unique_ptr<std::ostream>          Logger::s_stream = std::make_unique<std::ostream>( std::cout.rdbuf() );
 std::mutex                             Logger::s_mutex;
 std::map<std::thread::id, std::string> Logger::s_threadNames;
+std::chrono::system_clock::time_point  Logger::s_startTime       = std::chrono::system_clock::now();
+Logger::TimeGranularity                Logger::s_timeGranularity = Logger::TimeGranularity::MILLISECONDS;
 
 void Logger::log( Level level, const std::string& message, char const* function, char const* file, int line )
 {
     std::scoped_lock lock( s_mutex );
 
-    auto now            = std::chrono::system_clock::now();
-    auto s_since_epoch  = std::chrono::duration_cast<std::chrono::seconds>( now.time_since_epoch() );
-    auto ms_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>( now.time_since_epoch() );
-    std::chrono::seconds      secs( s_since_epoch.count() );
-    std::chrono::milliseconds ms              = std::chrono::duration_cast<std::chrono::milliseconds>( secs );
-    auto                      ms_since_last_s = ms_since_epoch - ms;
+    auto now              = std::chrono::system_clock::now();
+    auto s_since_startup  = std::chrono::duration_cast<std::chrono::seconds>( now - s_startTime );
+    auto ms_since_startup = std::chrono::duration_cast<std::chrono::milliseconds>( now - s_startTime );
 
-    const std::time_t t_now = std::chrono::system_clock::to_time_t( now );
+    std::chrono::seconds      secs( s_since_startup.count() );
+    std::chrono::milliseconds ms              = std::chrono::duration_cast<std::chrono::milliseconds>( secs );
+    auto                      ms_since_last_s = ms_since_startup - ms;
 
     auto threadId     = std::this_thread::get_id();
     auto threadNameIt = s_threadNames.find( threadId );
@@ -58,9 +59,16 @@ void Logger::log( Level level, const std::string& message, char const* function,
         auto fileName       = !filePath.empty() ? filePath.back() : file;
         auto fileComponents = caffa::StringTools::split( fileName, "." );
         fileName            = !fileComponents.empty() ? fileComponents.front() : fileName;
-        *s_stream << "[" << std::put_time( std::localtime( &t_now ), "%F %T." ) << std::setfill( '0' ) << std::setw( 3 )
-                  << ms_since_last_s.count() << "] [" << logLevelLabel( level ) << "] " << fileName << "::" << function
-                  << "[" << line << "]";
+        if ( s_timeGranularity != TimeGranularity::NONE )
+        {
+            *s_stream << "[" << std::setfill( '0' ) << std::setw( 3 ) << s_since_startup.count();
+            if ( s_timeGranularity == TimeGranularity::MILLISECONDS )
+            {
+                *s_stream << "." << std::setfill( '0' ) << std::setw( 3 ) << ms_since_last_s.count();
+            }
+            *s_stream << "] ";
+        }
+        *s_stream << "[" << logLevelLabel( level ) << "] " << fileName << "::" << function << "[" << line << "]";
         if ( !threadName.empty() )
         {
             *s_stream << "{" << threadName << "}";
@@ -107,6 +115,11 @@ std::map<Logger::Level, std::string> Logger::logLevels()
              { Level::WARNING, "warning" },
              { Level::ERROR, "error" },
              { Level::CRITICAL, "critical" } };
+}
+
+void Logger::setTimeGranularity( TimeGranularity granularity )
+{
+    s_timeGranularity = granularity;
 }
 
 void Logger::registerThreadName( const std::string& name )

@@ -42,6 +42,13 @@ public:
         TRACE
     };
 
+    enum class TimeGranularity
+    {
+        NONE,
+        SECONDS,
+        MILLISECONDS
+    };
+
     static void        log( Level level, const std::string& message, char const* function, char const* file, int line );
     static Level       applicationLogLevel();
     static void        setApplicationLogLevel( Level applicationLogLevel );
@@ -49,6 +56,7 @@ public:
     static Level       logLevelFromLabel( const std::string& label );
     static void        setLogFile( const std::string& logFile );
     static std::map<Level, std::string> logLevels();
+    static void                         setTimeGranularity( TimeGranularity granularity );
 
     static void registerThreadName( const std::string& name );
 
@@ -59,6 +67,8 @@ private:
     static std::mutex s_mutex;
 
     static std::map<std::thread::id, std::string> s_threadNames;
+    static std::chrono::system_clock::time_point  s_startTime;
+    static TimeGranularity                        s_timeGranularity;
 };
 
 } // namespace caffa

@@ -29,14 +29,22 @@
 
 using namespace caffa;
 
-Logger::Level                          Logger::s_applicationLogLevel = Logger::Level::WARNING;
-std::unique_ptr<std::ostream>          Logger::s_stream = std::make_unique<std::ostream>( std::cout.rdbuf() );
+Logger::Level Logger::s_applicationLogLevel = Logger::Level::WARNING;
+
+std::map<std::string, std::shared_ptr<std::ostream>> Logger::s_streams = {
+    { "default", std::make_shared<std::ostream>( std::cout.rdbuf() ) } };
+
 std::mutex                             Logger::s_mutex;
 std::map<std::thread::id, std::string> Logger::s_threadNames;
 std::chrono::system_clock::time_point  Logger::s_startTime       = std::chrono::system_clock::now();
 Logger::TimeGranularity                Logger::s_timeGranularity = Logger::TimeGranularity::MILLISECONDS;
 
-void Logger::log( Level level, const std::string& message, char const* function, char const* file, int line )
+void Logger::log( Level              level,
+                  const std::string& message,
+                  char const*        function,
+                  char const*        file,
+                  int                line,
+                  const std::string& binName /*="default"*/ )
 {
     std::scoped_lock lock( s_mutex );
 
@@ -52,6 +60,13 @@ void Logger::log( Level level, const std::string& message, char const* function,
     auto threadNameIt = s_threadNames.find( threadId );
     auto threadName   = threadNameIt != s_threadNames.end() ? threadNameIt->second : "UNKNOWN_THREAD";
 
+    auto stream_it = s_streams.find( binName );
+    if ( stream_it == s_streams.end() )
+    {
+        stream_it = s_streams.find( "default" );
+    }
+    auto& stream = stream_it->second;
+
     if ( level <= s_applicationLogLevel )
     {
         // TODO: should provide platform specific path delimiter
@@ -61,20 +76,20 @@ void Logger::log( Level level, const std::string& message, char const* function,
         fileName            = !fileComponents.empty() ? fileComponents.front() : fileName;
         if ( s_timeGranularity != TimeGranularity::NONE )
         {
-            *s_stream << "[" << std::setfill( '0' ) << std::setw( 3 ) << s_since_startup.count();
+            *stream << "[" << std::setfill( '0' ) << std::setw( 3 ) << s_since_startup.count();
             if ( s_timeGranularity == TimeGranularity::MILLISECONDS )
             {
-                *s_stream << "." << std::setfill( '0' ) << std::setw( 3 ) << ms_since_last_s.count();
+                *stream << "." << std::setfill( '0' ) << std::setw( 3 ) << ms_since_last_s.count();
             }
-            *s_stream << "] ";
+            *stream << "] ";
         }
-        *s_stream << "[" << logLevelLabel( level ) << "] " << fileName << "::" << function << "[" << line << "]";
+        *stream << "[" << logLevelLabel( level ) << "] " << fileName << "::" << function << "[" << line << "]";
         if ( !threadName.empty() )
         {
-            *s_stream << "{" << threadName << "}";
+            *stream << "{" << threadName << "}";
         }
 
-        *s_stream << ": " << message << std::endl;
+        *stream << ": " << message << std::endl;
     }
 }
 
@@ -102,9 +117,9 @@ Logger::Level Logger::logLevelFromLabel( const std::string& label )
     return Logger::Level::CRITICAL;
 }
 
-void Logger::setLogFile( const std::string& logFile )
+void Logger::setLogFile( const std::string& logFile, const std::string& logBinName /*="default"*/ )
 {
-    s_stream = std::make_unique<std::ofstream>( logFile );
+    s_streams[logBinName] = std::make_shared<std::ofstream>( logFile );
 }
 
 std::map<Logger::Level, std::string> Logger::logLevels()

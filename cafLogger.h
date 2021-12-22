@@ -49,20 +49,25 @@ public:
         MILLISECONDS
     };
 
-    static void        log( Level level, const std::string& message, char const* function, char const* file, int line );
+    static void        log( Level              level,
+                            const std::string& message,
+                            char const*        function,
+                            char const*        file,
+                            int                line,
+                            const std::string& binName = "default" );
     static Level       applicationLogLevel();
     static void        setApplicationLogLevel( Level applicationLogLevel );
     static std::string logLevelLabel( Level level );
     static Level       logLevelFromLabel( const std::string& label );
-    static void        setLogFile( const std::string& logFile );
+    static void        setLogFile( const std::string& logFile, const std::string& logBinName = "default" );
     static std::map<Level, std::string> logLevels();
     static void                         setTimeGranularity( TimeGranularity granularity );
 
     static void registerThreadName( const std::string& name );
 
 private:
-    static Level                         s_applicationLogLevel;
-    static std::unique_ptr<std::ostream> s_stream;
+    static Level                                                s_applicationLogLevel;
+    static std::map<std::string, std::shared_ptr<std::ostream>> s_streams;
 
     static std::mutex s_mutex;
 
@@ -73,20 +78,29 @@ private:
 
 } // namespace caffa
 
-#define CAFFA_LOG( LOG_LEVEL, MESSAGE )                                                                    \
+#define CAFFA_LOG( BIN_NAME, LOG_LEVEL, MESSAGE )                                                          \
     caffa::Logger::log( LOG_LEVEL,                                                                         \
                         static_cast<std::ostringstream&>( std::ostringstream().flush() << MESSAGE ).str(), \
                         __FUNCTION__,                                                                      \
                         __FILE__,                                                                          \
-                        __LINE__ );
+                        __LINE__,                                                                          \
+                        BIN_NAME );
 
-#define CAFFA_CRITICAL( Message_ )                             \
-    {                                                          \
-        CAFFA_LOG( caffa::Logger::Level::CRITICAL, Message_ ); \
-        exit( 1 );                                             \
+#define CAFFA_ERROR_BIN( BinName_, Message_ ) CAFFA_LOG( BinName_, caffa::Logger::Level::ERROR, Message_ )
+#define CAFFA_WARNING_BIN( BinName_, Message_ ) CAFFA_LOG( BinName_, caffa::Logger::Level::WARNING, Message_ )
+#define CAFFA_INFO_BIN( BinName_, Message_ ) CAFFA_LOG( BinName_, caffa::Logger::Level::INFO, Message_ )
+#define CAFFA_DEBUG_BIN( BinName_, Message_ ) CAFFA_LOG( BinName_, caffa::Logger::Level::DEBUG, Message_ )
+#define CAFFA_TRACE_BIN( BinName_, Message_ ) CAFFA_LOG( BinName_, caffa::Logger::Level::TRACE, Message_ )
+
+#define CAFFA_CRITICAL_BIN( BinName_, Message_ )                         \
+    {                                                                    \
+        CAFFA_LOG( BinName_, caffa::Logger::Level::CRITICAL, Message_ ); \
+        exit( 1 );                                                       \
     }
-#define CAFFA_ERROR( Message_ ) CAFFA_LOG( caffa::Logger::Level::ERROR, Message_ )
-#define CAFFA_WARNING( Message_ ) CAFFA_LOG( caffa::Logger::Level::WARNING, Message_ )
-#define CAFFA_INFO( Message_ ) CAFFA_LOG( caffa::Logger::Level::INFO, Message_ )
-#define CAFFA_DEBUG( Message_ ) CAFFA_LOG( caffa::Logger::Level::DEBUG, Message_ )
-#define CAFFA_TRACE( Message_ ) CAFFA_LOG( caffa::Logger::Level::TRACE, Message_ )
+
+#define CAFFA_CRITICAL( Message_ ) CAFFA_CRITICAL_BIN( "default", Message_ )
+#define CAFFA_ERROR( Message_ ) CAFFA_LOG( "default", caffa::Logger::Level::ERROR, Message_ )
+#define CAFFA_WARNING( Message_ ) CAFFA_LOG( "default", caffa::Logger::Level::WARNING, Message_ )
+#define CAFFA_INFO( Message_ ) CAFFA_LOG( "default", caffa::Logger::Level::INFO, Message_ )
+#define CAFFA_DEBUG( Message_ ) CAFFA_LOG( "default", caffa::Logger::Level::DEBUG, Message_ )
+#define CAFFA_TRACE( Message_ ) CAFFA_LOG( "default", caffa::Logger::Level::TRACE, Message_ )

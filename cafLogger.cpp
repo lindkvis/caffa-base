@@ -61,7 +61,7 @@ void Logger::log( Level              level,
     auto threadName   = threadNameIt != s_threadNames.end() ? threadNameIt->second : "UNKNOWN_THREAD";
 
     auto stream_it = s_streams.find( binName );
-    if ( stream_it == s_streams.end() )
+    if ( stream_it == s_streams.end() || !stream_it->second || !stream_it->second->good() )
     {
         stream_it = s_streams.find( "default" );
     }
@@ -95,10 +95,12 @@ void Logger::log( Level              level,
 
 Logger::Level Logger::applicationLogLevel()
 {
+    std::scoped_lock lock( s_mutex );
     return s_applicationLogLevel;
 }
 void Logger::setApplicationLogLevel( Level applicationLogLevel )
 {
+    std::scoped_lock lock( s_mutex );
     s_applicationLogLevel = applicationLogLevel;
 }
 
@@ -119,6 +121,7 @@ Logger::Level Logger::logLevelFromLabel( const std::string& label )
 
 void Logger::setLogFile( const std::string& logFile, const std::string& logBinName /*="default"*/ )
 {
+    std::scoped_lock lock( s_mutex );
     s_streams[logBinName] = std::make_shared<std::ofstream>( logFile );
 }
 
@@ -134,6 +137,7 @@ std::map<Logger::Level, std::string> Logger::logLevels()
 
 void Logger::setTimeGranularity( TimeGranularity granularity )
 {
+    std::scoped_lock lock( s_mutex );
     s_timeGranularity = granularity;
 }
 

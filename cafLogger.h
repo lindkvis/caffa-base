@@ -37,6 +37,7 @@ public:
         CRITICAL,
         ERROR,
         WARNING,
+        REPLAY,
         INFO,
         DEBUG,
         TRACE
@@ -89,6 +90,7 @@ private:
 #define CAFFA_ERROR_BIN( BinName_, Message_ ) CAFFA_LOG( BinName_, caffa::Logger::Level::ERROR, Message_ )
 #define CAFFA_WARNING_BIN( BinName_, Message_ ) CAFFA_LOG( BinName_, caffa::Logger::Level::WARNING, Message_ )
 #define CAFFA_INFO_BIN( BinName_, Message_ ) CAFFA_LOG( BinName_, caffa::Logger::Level::INFO, Message_ )
+#define CAFFA_REPLAY_BIN( BinName_, Message_ ) CAFFA_LOG( BinName_, caffa::Logger::Level::REPLAY, Message_ )
 #define CAFFA_DEBUG_BIN( BinName_, Message_ ) CAFFA_LOG( BinName_, caffa::Logger::Level::DEBUG, Message_ )
 #define CAFFA_TRACE_BIN( BinName_, Message_ ) CAFFA_LOG( BinName_, caffa::Logger::Level::TRACE, Message_ )
 

@@ -69,27 +69,34 @@ void Logger::log( Level              level,
 
     if ( level <= s_applicationLogLevel )
     {
-        // TODO: should provide platform specific path delimiter
         auto filePath       = caffa::StringTools::split( file, "/" );
         auto fileName       = !filePath.empty() ? filePath.back() : file;
         auto fileComponents = caffa::StringTools::split( fileName, "." );
         fileName            = !fileComponents.empty() ? fileComponents.front() : fileName;
-        if ( s_timeGranularity != TimeGranularity::NONE )
-        {
-            *stream << "[" << std::setfill( '0' ) << std::setw( 3 ) << s_since_startup.count();
-            if ( s_timeGranularity == TimeGranularity::MILLISECONDS )
-            {
-                *stream << "." << std::setfill( '0' ) << std::setw( 3 ) << ms_since_last_s.count();
-            }
-            *stream << "] ";
-        }
-        *stream << "[" << logLevelLabel( level ) << "] " << fileName << "::" << function << "[" << line << "]";
-        if ( !threadName.empty() )
-        {
-            *stream << "{" << threadName << "}";
-        }
 
-        *stream << ": " << message << std::endl;
+        if ( level == Level::REPLAY )
+        {
+            *stream << "[" << logLevelLabel( level ) << "] " << function << " " << message << std::endl;
+        }
+        else
+        {
+            if ( s_timeGranularity != TimeGranularity::NONE )
+            {
+                *stream << "[" << std::setfill( '0' ) << std::setw( 3 ) << s_since_startup.count();
+                if ( s_timeGranularity == TimeGranularity::MILLISECONDS )
+                {
+                    *stream << "." << std::setfill( '0' ) << std::setw( 3 ) << ms_since_last_s.count();
+                }
+                *stream << "] ";
+            }
+            *stream << "[" << logLevelLabel( level ) << "] " << fileName << "::" << function << "[" << line << "]";
+            if ( !threadName.empty() )
+            {
+                *stream << "{" << threadName << "}";
+            }
+
+            *stream << ": " << message << std::endl;
+        }
     }
 }
 
@@ -129,6 +136,7 @@ std::map<Logger::Level, std::string> Logger::logLevels()
 {
     return { { Level::TRACE, "trace" },
              { Level::DEBUG, "debug" },
+             { Level::REPLAY, "replay" },
              { Level::INFO, "info" },
              { Level::WARNING, "warning" },
              { Level::ERROR, "error" },

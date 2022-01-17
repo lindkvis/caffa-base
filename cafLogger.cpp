@@ -132,6 +132,12 @@ void Logger::setLogFile( const std::string& logFile, const std::string& logBinNa
     s_streams[logBinName] = std::make_shared<std::ofstream>( logFile );
 }
 
+void Logger::resetLogFileForBin( const std::string& logBinName )
+{
+    std::scoped_lock lock( s_mutex );
+    s_streams.erase( logBinName );
+}
+
 std::map<Logger::Level, std::string> Logger::logLevels()
 {
     return { { Level::TRACE, "trace" },

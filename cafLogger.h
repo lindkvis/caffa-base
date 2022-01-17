@@ -60,7 +60,10 @@ public:
     static void        setApplicationLogLevel( Level applicationLogLevel );
     static std::string logLevelLabel( Level level );
     static Level       logLevelFromLabel( const std::string& label );
-    static void        setLogFile( const std::string& logFile, const std::string& logBinName = "default" );
+
+    static void setLogFile( const std::string& logFile, const std::string& logBinName = "default" );
+    static void resetLogFileForBin( const std::string& logBinName );
+
     static std::map<Level, std::string> logLevels();
     static void                         setTimeGranularity( TimeGranularity granularity );
 

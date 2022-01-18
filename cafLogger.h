@@ -100,7 +100,6 @@ private:
 #define CAFFA_CRITICAL_BIN( BinName_, Message_ )                         \
     {                                                                    \
         CAFFA_LOG( BinName_, caffa::Logger::Level::CRITICAL, Message_ ); \
-        exit( 1 );                                                       \
     }
 
 #define CAFFA_CRITICAL( Message_ ) CAFFA_CRITICAL_BIN( "default", Message_ )

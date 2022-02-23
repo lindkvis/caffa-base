@@ -29,7 +29,7 @@
 
 using namespace caffa;
 
-Logger::Level Logger::s_applicationLogLevel = Logger::Level::WARNING;
+std::map<std::string, Logger::Level> Logger::s_applicationLogLevels;
 
 std::map<std::string, std::shared_ptr<std::ostream>> Logger::s_streams = {
     { "default", std::make_shared<std::ostream>( std::cout.rdbuf() ) } };
@@ -67,7 +67,7 @@ void Logger::log( Level              level,
     }
     auto& stream = stream_it->second;
 
-    if ( level <= s_applicationLogLevel )
+    if ( level <= applicationLogLevel( binName ) )
     {
         auto filePath       = caffa::StringTools::split( file, "/" );
         auto fileName       = !filePath.empty() ? filePath.back() : file;
@@ -100,15 +100,16 @@ void Logger::log( Level              level,
     }
 }
 
-Logger::Level Logger::applicationLogLevel()
+Logger::Level Logger::applicationLogLevel( const std::string& binName )
 {
-    std::scoped_lock lock( s_mutex );
-    return s_applicationLogLevel;
+    auto it = s_applicationLogLevels.find( binName );
+    return it == s_applicationLogLevels.end() ? Logger::Level::WARNING : it->second;
 }
-void Logger::setApplicationLogLevel( Level applicationLogLevel )
+
+void Logger::setApplicationLogLevel( Level applicationLogLevel, const std::string& binName )
 {
     std::scoped_lock lock( s_mutex );
-    s_applicationLogLevel = applicationLogLevel;
+    s_applicationLogLevels[binName] = applicationLogLevel;
 }
 
 std::string Logger::logLevelLabel( Level level )

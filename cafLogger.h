@@ -56,8 +56,8 @@ public:
                             char const*        file,
                             int                line,
                             const std::string& binName = "default" );
-    static Level       applicationLogLevel();
-    static void        setApplicationLogLevel( Level applicationLogLevel );
+    static Level       applicationLogLevel( const std::string& binName = "default" );
+    static void        setApplicationLogLevel( Level applicationLogLevel, const std::string& binName = "default" );
     static std::string logLevelLabel( Level level );
     static Level       logLevelFromLabel( const std::string& label );
 
@@ -70,7 +70,7 @@ public:
     static void registerThreadName( const std::string& name );
 
 private:
-    static Level                                                s_applicationLogLevel;
+    static std::map<std::string, Level>                         s_applicationLogLevels;
     static std::map<std::string, std::shared_ptr<std::ostream>> s_streams;
 
     static std::mutex s_mutex;

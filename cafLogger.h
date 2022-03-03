@@ -23,6 +23,7 @@
 #include <map>
 #include <memory>
 #include <mutex>
+#include <random>
 #include <sstream>
 #include <string>
 #include <thread>
@@ -69,6 +70,8 @@ public:
 
     static void registerThreadName( const std::string& name );
 
+    static void addRandomDelay( unsigned maxDelayUs, unsigned seed = 5489u );
+
 private:
     static std::map<std::string, Level>                         s_applicationLogLevels;
     static std::map<std::string, std::shared_ptr<std::ostream>> s_streams;
@@ -78,6 +81,9 @@ private:
     static std::map<std::thread::id, std::string> s_threadNames;
     static std::chrono::system_clock::time_point  s_startTime;
     static TimeGranularity                        s_timeGranularity;
+
+    static std::unique_ptr<std::mt19937>                       s_randomGenerator;
+    static std::unique_ptr<std::uniform_int_distribution<int>> s_randomIntDistribution;
 };
 
 } // namespace caffa

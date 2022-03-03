@@ -25,6 +25,7 @@
 #include <chrono>
 #include <fstream>
 #include <iomanip>
+#include <random>
 #include <thread>
 
 using namespace caffa;
@@ -34,10 +35,12 @@ std::map<std::string, Logger::Level> Logger::s_applicationLogLevels;
 std::map<std::string, std::shared_ptr<std::ostream>> Logger::s_streams = {
     { "default", std::make_shared<std::ostream>( std::cout.rdbuf() ) } };
 
-std::mutex                             Logger::s_mutex;
-std::map<std::thread::id, std::string> Logger::s_threadNames;
-std::chrono::system_clock::time_point  Logger::s_startTime       = std::chrono::system_clock::now();
-Logger::TimeGranularity                Logger::s_timeGranularity = Logger::TimeGranularity::MILLISECONDS;
+std::mutex                                          Logger::s_mutex;
+std::map<std::thread::id, std::string>              Logger::s_threadNames;
+std::chrono::system_clock::time_point               Logger::s_startTime       = std::chrono::system_clock::now();
+Logger::TimeGranularity                             Logger::s_timeGranularity = Logger::TimeGranularity::MILLISECONDS;
+std::unique_ptr<std::mt19937>                       Logger::s_randomGenerator;
+std::unique_ptr<std::uniform_int_distribution<int>> Logger::s_randomIntDistribution;
 
 void Logger::log( Level              level,
                   const std::string& message,
@@ -47,6 +50,11 @@ void Logger::log( Level              level,
                   const std::string& binName /*="default"*/ )
 {
     std::scoped_lock lock( s_mutex );
+
+    if ( s_randomGenerator && s_randomIntDistribution )
+    {
+        std::this_thread::sleep_for( std::chrono::microseconds( ( *s_randomIntDistribution )( *s_randomGenerator ) ) );
+    }
 
     auto now              = std::chrono::system_clock::now();
     auto s_since_startup  = std::chrono::duration_cast<std::chrono::seconds>( now - s_startTime );
@@ -160,4 +168,10 @@ void Logger::registerThreadName( const std::string& name )
 {
     std::scoped_lock lock( s_mutex );
     s_threadNames[std::this_thread::get_id()] = name;
+}
+
+void Logger::addRandomDelay( unsigned maxDelayUs, unsigned seed )
+{
+    s_randomGenerator       = std::make_unique<std::mt19937>( seed );
+    s_randomIntDistribution = std::make_unique<std::uniform_int_distribution<int>>( 0, (int)maxDelayUs );
 }

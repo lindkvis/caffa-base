@@ -35,12 +35,13 @@ std::map<std::string, Logger::Level> Logger::s_applicationLogLevels;
 std::map<std::string, std::shared_ptr<std::ostream>> Logger::s_streams = {
     { "default", std::make_shared<std::ostream>( std::cout.rdbuf() ) } };
 
-std::mutex                                          Logger::s_mutex;
-std::map<std::thread::id, std::string>              Logger::s_threadNames;
-std::chrono::system_clock::time_point               Logger::s_startTime       = std::chrono::system_clock::now();
-Logger::TimeGranularity                             Logger::s_timeGranularity = Logger::TimeGranularity::MILLISECONDS;
-std::unique_ptr<std::mt19937>                       Logger::s_randomGenerator;
-std::unique_ptr<std::uniform_int_distribution<int>> Logger::s_randomIntDistribution;
+std::mutex                             Logger::s_mutex;
+std::map<std::thread::id, std::string> Logger::s_threadNames;
+std::chrono::system_clock::time_point  Logger::s_startTime       = std::chrono::system_clock::now();
+Logger::TimeGranularity                Logger::s_timeGranularity = Logger::TimeGranularity::MILLISECONDS;
+std::unique_ptr<std::mt19937>          Logger::s_randomGenerator;
+std::unique_ptr<std::exponential_distribution<double>> Logger::s_randomDistribution;
+unsigned                                               Logger::s_maxDelayUs = 0u;
 
 void Logger::log( Level              level,
                   const std::string& message,
@@ -50,11 +51,6 @@ void Logger::log( Level              level,
                   const std::string& binName /*="default"*/ )
 {
     std::scoped_lock lock( s_mutex );
-
-    if ( s_randomGenerator && s_randomIntDistribution )
-    {
-        std::this_thread::sleep_for( std::chrono::microseconds( ( *s_randomIntDistribution )( *s_randomGenerator ) ) );
-    }
 
     auto now              = std::chrono::system_clock::now();
     auto s_since_startup  = std::chrono::duration_cast<std::chrono::seconds>( now - s_startTime );
@@ -81,6 +77,18 @@ void Logger::log( Level              level,
         auto fileName       = !filePath.empty() ? filePath.back() : file;
         auto fileComponents = caffa::StringTools::split( fileName, "." );
         fileName            = !fileComponents.empty() ? fileComponents.front() : fileName;
+
+        if ( s_randomGenerator && s_randomDistribution && s_maxDelayUs > 0u )
+        {
+            double   randomNumber = ( *s_randomDistribution )( *s_randomGenerator );
+            unsigned sleepUs      = randomNumber / 5.0 * s_maxDelayUs;
+
+            if ( level >= Level::TRACE )
+            {
+                *stream << "[" << logLevelLabel( level ) << "] Sleeping for " << sleepUs << " microseconds" << std::endl;
+            }
+            std::this_thread::sleep_for( std::chrono::microseconds( sleepUs ) );
+        }
 
         if ( level == Level::REPLAY )
         {
@@ -172,6 +180,7 @@ void Logger::registerThreadName( const std::string& name )
 
 void Logger::addRandomDelay( unsigned maxDelayUs, unsigned seed )
 {
-    s_randomGenerator       = std::make_unique<std::mt19937>( seed );
-    s_randomIntDistribution = std::make_unique<std::uniform_int_distribution<int>>( 0, (int)maxDelayUs );
+    s_randomGenerator    = std::make_unique<std::mt19937>( seed );
+    s_randomDistribution = std::make_unique<std::exponential_distribution<double>>( 1.5 );
+    s_maxDelayUs         = maxDelayUs;
 }

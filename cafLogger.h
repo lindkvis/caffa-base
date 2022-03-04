@@ -82,8 +82,9 @@ private:
     static std::chrono::system_clock::time_point  s_startTime;
     static TimeGranularity                        s_timeGranularity;
 
-    static std::unique_ptr<std::mt19937>                       s_randomGenerator;
-    static std::unique_ptr<std::uniform_int_distribution<int>> s_randomIntDistribution;
+    static std::unique_ptr<std::mt19937>                          s_randomGenerator;
+    static std::unique_ptr<std::exponential_distribution<double>> s_randomDistribution;
+    static unsigned                                               s_maxDelayUs;
 };
 
 } // namespace caffa

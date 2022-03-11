@@ -44,7 +44,9 @@
 #include <stdexcept>
 #include <string>
 
+#ifdef MSVC
 #pragma warning( disable : 4996 )
+#endif
 
 namespace caffa::StringTools
 {

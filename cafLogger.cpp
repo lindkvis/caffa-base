@@ -52,13 +52,13 @@ void Logger::log( Level              level,
 {
     std::scoped_lock lock( s_mutex );
 
-    auto now              = std::chrono::system_clock::now();
-    auto s_since_startup  = std::chrono::duration_cast<std::chrono::seconds>( now - s_startTime );
-    auto ms_since_startup = std::chrono::duration_cast<std::chrono::milliseconds>( now - s_startTime );
-
-    std::chrono::seconds      secs( s_since_startup.count() );
+    auto now            = std::chrono::system_clock::now();
+    auto s_since_epoch  = std::chrono::duration_cast<std::chrono::seconds>( now.time_since_epoch() );
+    auto ms_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>( now.time_since_epoch() );
+    std::chrono::seconds      secs( s_since_epoch.count() );
     std::chrono::milliseconds ms              = std::chrono::duration_cast<std::chrono::milliseconds>( secs );
-    auto                      ms_since_last_s = ms_since_startup - ms;
+    auto                      ms_since_last_s = ms_since_epoch - ms;
+    const std::time_t         t_now           = std::chrono::system_clock::to_time_t( now );
 
     auto threadId     = std::this_thread::get_id();
     auto threadNameIt = s_threadNames.find( threadId );
@@ -98,7 +98,7 @@ void Logger::log( Level              level,
         {
             if ( s_timeGranularity != TimeGranularity::NONE )
             {
-                *stream << "[" << std::setfill( '0' ) << std::setw( 3 ) << s_since_startup.count();
+                *stream << "[" << std::put_time( std::localtime( &t_now ), "%F %T" );
                 if ( s_timeGranularity == TimeGranularity::MILLISECONDS )
                 {
                     *stream << "." << std::setfill( '0' ) << std::setw( 3 ) << ms_since_last_s.count();

@@ -102,7 +102,13 @@ private:
 #define CAFFA_INFO_BIN( BinName_, Message_ ) CAFFA_LOG( BinName_, caffa::Logger::Level::INFO, Message_ )
 #define CAFFA_REPLAY_BIN( BinName_, Message_ ) CAFFA_LOG( BinName_, caffa::Logger::Level::REPLAY, Message_ )
 #define CAFFA_DEBUG_BIN( BinName_, Message_ ) CAFFA_LOG( BinName_, caffa::Logger::Level::DEBUG, Message_ )
+#ifndef NDEBUG
 #define CAFFA_TRACE_BIN( BinName_, Message_ ) CAFFA_LOG( BinName_, caffa::Logger::Level::TRACE, Message_ )
+#else
+#define CAFFA_TRACE_BIN( BinName_, Message_ ) \
+    {                                         \
+    }
+#endif
 
 #define CAFFA_CRITICAL_BIN( BinName_, Message_ )                         \
     {                                                                    \
@@ -114,4 +120,10 @@ private:
 #define CAFFA_WARNING( Message_ ) CAFFA_LOG( "default", caffa::Logger::Level::WARNING, Message_ )
 #define CAFFA_INFO( Message_ ) CAFFA_LOG( "default", caffa::Logger::Level::INFO, Message_ )
 #define CAFFA_DEBUG( Message_ ) CAFFA_LOG( "default", caffa::Logger::Level::DEBUG, Message_ )
+#ifndef NDEBUG
 #define CAFFA_TRACE( Message_ ) CAFFA_LOG( "default", caffa::Logger::Level::TRACE, Message_ )
+#else
+#define CAFFA_TRACE( Message_ ) \
+    {                           \
+    }
+#endif

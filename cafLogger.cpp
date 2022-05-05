@@ -21,7 +21,7 @@
 
 #include "cafStringTools.h"
 
-#include <assert.h>
+#include <cassert>
 #include <chrono>
 #include <fstream>
 #include <iomanip>

@@ -20,7 +20,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-set(PUBLIC_HEADERS cafLogger.h cafStringTools.h cafNotNull.h)
+set(PUBLIC_HEADERS cafAssert.h cafLogger.h cafStringTools.h cafNotNull.h)
 set(PROJECT_FILES cafLogger.cpp cafStringTools.cpp)
 
 if(CAFFA_BUILD_SHARED)

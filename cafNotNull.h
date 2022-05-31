@@ -18,6 +18,8 @@
 #pragma once
 
 #include <iosfwd> // for ostream
+#include <system_error> // for hash
+#include <type_traits> // for enable_if_t, is_convertible, is_assignable
 
 //
 // Temporary until MSVC STL supports no-exceptions mode.
@@ -223,14 +225,12 @@ auto make_not_null( T&& t ) noexcept
     return not_null<std::remove_cv_t<std::remove_reference_t<T>>>{ std::forward<T>( t ) };
 }
 
-#if !defined( CAFFA_NO_IOSTREAMS )
 template <class T>
 std::ostream& operator<<( std::ostream& os, const not_null<T>& val )
 {
     os << val.get();
     return os;
 }
-#endif // !defined(CAFFA_NO_IOSTREAMS)
 
 template <class T, class U>
 auto operator==( const not_null<T>& lhs, const not_null<U>& rhs ) noexcept( noexcept( lhs.get() == rhs.get() ) )

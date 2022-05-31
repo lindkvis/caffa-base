@@ -8,9 +8,9 @@ if(NOT VERSION)
 endif()
 
 project(
-  caffaLogger
+  caffaBase
   VERSION ${VERSION}
-  DESCRIPTION "Caffa Logging Library")
+  DESCRIPTION "Caffa Base Utility Library")
 
 message(STATUS "Building ${PROJECT_NAME} version ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}-${GIT_HASH}")
 
@@ -20,7 +20,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-set(PUBLIC_HEADERS cafLogger.h cafStringTools.h)
+set(PUBLIC_HEADERS cafLogger.h cafStringTools.h cafNotNull.h)
 set(PROJECT_FILES cafLogger.cpp cafStringTools.cpp)
 
 if(CAFFA_BUILD_SHARED)
@@ -49,4 +49,3 @@ install(
   PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 source_group("" FILES ${PROJECT_FILES})
-

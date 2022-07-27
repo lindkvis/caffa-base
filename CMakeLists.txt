@@ -34,7 +34,10 @@ set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${CMAKE_PROJECT_VERSION
 set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION ${CMAKE_PROJECT_VERSION_MAJOR})
 set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${PUBLIC_HEADERS}")
 
-find_package(spdlog 1.5.0 REQUIRED)
+set(SPDLOG_BUILD_SHARED
+    ${CAFFA_BUILD_SHARED}
+    CACHE BOOL "Build spdlog as a shared library")
+add_subdirectory(spdlog)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 

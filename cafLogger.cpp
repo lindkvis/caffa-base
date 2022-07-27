@@ -79,6 +79,10 @@ void Logger::registerFileLogger( const std::string& logFile,
                                  size_t             maxFileSizeMiB /*= 5u */,
                                  size_t             maxRotatedFiles /*= 3u */ )
 {
+    if ( spdlog::get( logSinkName ) )
+    {
+        spdlog::drop( logSinkName );
+    }
     auto logger = spdlog::rotating_logger_mt( logSinkName, logFile, maxFileSizeMiB * 1024u * 1024u, maxRotatedFiles, true );
 }
 

@@ -70,7 +70,7 @@ void Logger::registerDefaultFileLogger( const std::string& logFile,
                                         size_t             maxFileSizeMiB /*= 5u */,
                                         size_t             maxRotatedFiles /*= 3u */ )
 {
-    auto logger = spdlog::rotating_logger_mt( "default", logFile, maxFileSizeMiB * 1024u * 1024u, maxRotatedFiles );
+    auto logger = spdlog::rotating_logger_mt( "default", logFile, maxFileSizeMiB * 1024u * 1024u, maxRotatedFiles, true );
     spdlog::set_default_logger( logger );
 }
 
@@ -79,14 +79,12 @@ void Logger::registerFileLogger( const std::string& logFile,
                                  size_t             maxFileSizeMiB /*= 5u */,
                                  size_t             maxRotatedFiles /*= 3u */ )
 {
-    auto logger = spdlog::rotating_logger_mt( logSinkName, logFile, maxFileSizeMiB * 1024u * 1024u, maxRotatedFiles );
-    spdlog::register_logger( logger );
+    auto logger = spdlog::rotating_logger_mt( logSinkName, logFile, maxFileSizeMiB * 1024u * 1024u, maxRotatedFiles, true );
 }
 
 void Logger::registerStdOutLogger( const std::string& logSinkName )
 {
     auto console = spdlog::stdout_color_mt( logSinkName );
-    spdlog::register_logger( console );
 }
 
 std::shared_ptr<spdlog::logger> Logger::get( const std::string& sinkName )

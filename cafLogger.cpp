@@ -42,29 +42,25 @@ void Logger::setApplicationLogLevel( spdlog::level::level_enum applicationLogLev
 
 std::map<spdlog::level::level_enum, std::string> Logger::logLevels()
 {
-    std::vector<std::string>                         names = SPDLOG_LEVEL_NAMES;
     std::map<spdlog::level::level_enum, std::string> all_levels;
+    all_levels[spdlog::level::off]      = fmt::format( SPDLOG_LEVEL_NAME_OFF );
+    all_levels[spdlog::level::critical] = fmt::format( SPDLOG_LEVEL_NAME_CRITICAL );
+    all_levels[spdlog::level::err]      = fmt::format( SPDLOG_LEVEL_NAME_ERROR );
+    all_levels[spdlog::level::warn]     = fmt::format( SPDLOG_LEVEL_NAME_WARNING );
+    all_levels[spdlog::level::info]     = fmt::format( SPDLOG_LEVEL_NAME_INFO );
 #ifndef NDEBUG
-    for ( size_t i = 0; i <= static_cast<size_t>( spdlog::level::info ); ++i )
-    {
-        all_levels[static_cast<spdlog::level::level_enum>( i )] = names[i];
-    }
-
-#else
-    for ( size_t i = 0; i < names.size(); ++i )
-    {
-        all_levels[static_cast<spdlog::level::level_enum>( i )] = names[i];
-    }
+    all_levels[spdlog::level::debug] = fmt::format( SPDLOG_LEVEL_NAME_DEBUG );
+    all_levels[spdlog::level::trace] = fmt::format( SPDLOG_LEVEL_NAME_TRACE );
 #endif
     return all_levels;
 }
 
 spdlog::level::level_enum Logger::logLevelFromLabel( const std::string& label )
 {
-    std::vector<std::string> names = SPDLOG_LEVEL_NAMES;
-    for ( size_t i = 0; i < names.size(); ++i )
+    auto levels = logLevels();
+    for ( auto [levelValue, levelLabel] : levels )
     {
-        if ( label == names[i] ) return static_cast<spdlog::level::level_enum>( i );
+        if ( levelLabel == label ) return levelValue;
     }
     assert( false );
     return spdlog::level::trace;

@@ -106,8 +106,8 @@ public:
 #define CAFFA_DEBUG( MESSAGE ) spdlog::debug( CAFFA_GENERATE_MSG( MESSAGE ) )
 #define CAFFA_TRACE( MESSAGE ) spdlog::trace( CAFFA_GENERATE_MSG( MESSAGE ) )
 #else
-#define CAFFA_DEBUG MESSAGE ) \
-    {                         \
+#define CAFFA_DEBUG( MESSAGE ) \
+    {                          \
     }
 #define CAFFA_TRACE( MESSAGE ) \
     {                          \

@@ -34,6 +34,11 @@ set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${CMAKE_PROJECT_VERSION
 set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION ${CMAKE_PROJECT_VERSION_MAJOR})
 set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${PUBLIC_HEADERS}")
 
+set(SPDLOG_BUILD_SHARED
+    ${CAFFA_BUILD_SHARED}
+    CACHE BOOL "Build spdlog as a shared library")
+add_subdirectory(spdlog)
+
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 if(MSVC)
@@ -41,7 +46,7 @@ if(MSVC)
   set_target_properties(${PROJECT_NAME} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 endif()
 
-target_link_libraries(${PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME} spdlog)
 
 install(
   TARGETS ${PROJECT_NAME}

@@ -53,7 +53,7 @@ public:
 } // namespace caffa
 
 #define CAFFA_GENERATE_MSG( MESSAGE ) \
-    static_cast<std::ostringstream&>( std::ostringstream().flush() << __FUNCTION__ << " " << MESSAGE ).str()
+    static_cast<std::ostringstream&>( std::ostringstream().flush() << __FUNCTION__ << MESSAGE ).str()
 
 #ifndef NDEBUG
 #define CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE )                                                                     \

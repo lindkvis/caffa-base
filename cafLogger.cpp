@@ -48,10 +48,8 @@ std::map<spdlog::level::level_enum, std::string> Logger::logLevels()
     all_levels[spdlog::level::err]      = fmt::format( SPDLOG_LEVEL_NAME_ERROR );
     all_levels[spdlog::level::warn]     = fmt::format( SPDLOG_LEVEL_NAME_WARNING );
     all_levels[spdlog::level::info]     = fmt::format( SPDLOG_LEVEL_NAME_INFO );
-#ifndef NDEBUG
-    all_levels[spdlog::level::debug] = fmt::format( SPDLOG_LEVEL_NAME_DEBUG );
-    all_levels[spdlog::level::trace] = fmt::format( SPDLOG_LEVEL_NAME_TRACE );
-#endif
+    all_levels[spdlog::level::debug]    = fmt::format( SPDLOG_LEVEL_NAME_DEBUG );
+    all_levels[spdlog::level::trace]    = fmt::format( SPDLOG_LEVEL_NAME_TRACE );
     return all_levels;
 }
 

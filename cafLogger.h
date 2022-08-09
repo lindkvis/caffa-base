@@ -70,14 +70,11 @@ public:
 #define CAFFA_ERROR_SINK( SINK_NAME, MESSAGE ) caffa::Logger::get( SINK_NAME )->error( CAFFA_GENERATE_MSG( MESSAGE ) )
 #define CAFFA_WARNING_SINK( SINK_NAME, MESSAGE ) caffa::Logger::get( SINK_NAME )->warn( CAFFA_GENERATE_MSG( MESSAGE ) )
 #define CAFFA_INFO_SINK( SINK_NAME, MESSAGE ) caffa::Logger::get( SINK_NAME )->info( CAFFA_GENERATE_MSG( MESSAGE ) )
+#define CAFFA_DEBUG_SINK( SINK_NAME, MESSAGE ) caffa::Logger::get( SINK_NAME )->debug( CAFFA_GENERATE_MSG( MESSAGE ) )
 
 #ifndef NDEBUG
-#define CAFFA_DEBUG_SINK( SINK_NAME, MESSAGE ) caffa::Logger::get( SINK_NAME )->debug( CAFFA_GENERATE_MSG( MESSAGE ) )
 #define CAFFA_TRACE_SINK( SINK_NAME, MESSAGE ) caffa::Logger::get( SINK_NAME )->trace( CAFFA_GENERATE_MSG( MESSAGE ) )
 #else
-#define CAFFA_DEBUG_SINK( SINK_NAME, MESSAGE ) \
-    {                                          \
-    }
 #define CAFFA_TRACE_SINK( SINK_NAME, MESSAGE ) \
     {                                          \
     }
@@ -91,16 +88,13 @@ public:
     caffa::Logger::get( SINK_NAME )->warn( CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
 #define CAFFA_INFO_SINK_CODE_LINE( SINK_NAME, MESSAGE ) \
     caffa::Logger::get( SINK_NAME )->info( CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
-
-#ifndef NDEBUG
 #define CAFFA_DEBUG_SINK_CODE_LINE( SINK_NAME, MESSAGE ) \
     caffa::Logger::get( SINK_NAME )->debug( CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
+
+#ifndef NDEBUG
 #define CAFFA_TRACE_SINK_CODE_LINE( SINK_NAME, MESSAGE ) \
     caffa::Logger::get( SINK_NAME )->trace( CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
 #else
-#define CAFFA_DEBUG_SINK_CODE_LINE( SINK_NAME, MESSAGE ) \
-    {                                                    \
-    }
 #define CAFFA_TRACE_SINK_CODE_LINE( SINK_NAME, MESSAGE ) \
     {                                                    \
     }
@@ -110,13 +104,10 @@ public:
 #define CAFFA_ERROR( MESSAGE ) spdlog::error( CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
 #define CAFFA_WARNING( MESSAGE ) spdlog::warn( CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
 #define CAFFA_INFO( MESSAGE ) spdlog::info( CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
-#ifndef NDEBUG
 #define CAFFA_DEBUG( MESSAGE ) spdlog::debug( CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
+#ifndef NDEBUG
 #define CAFFA_TRACE( MESSAGE ) spdlog::trace( CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
 #else
-#define CAFFA_DEBUG( MESSAGE ) \
-    {                          \
-    }
 #define CAFFA_TRACE( MESSAGE ) \
     {                          \
     }

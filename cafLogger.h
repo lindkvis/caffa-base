@@ -53,13 +53,13 @@ public:
 } // namespace caffa
 
 #define CAFFA_GENERATE_MSG( MESSAGE ) \
-    static_cast<std::ostringstream&>( std::ostringstream().flush() << __FUNCTION__ << MESSAGE ).str()
+    static_cast<std::ostringstream&>( std::ostringstream().flush() << __FUNCTION__ << std::boolalpha << MESSAGE ).str()
 
 #ifndef NDEBUG
 #define CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE )                                                                     \
     static_cast<std::ostringstream&>( std::ostringstream().flush()                                                  \
                                       << caffa::Logger::simplifyFileName( __FILE__ ) << "::" << __FUNCTION__ << "[" \
-                                      << __LINE__ << "]: " << MESSAGE )                                             \
+                                      << __LINE__ << "]: " << std::boolalpha << MESSAGE )                           \
         .str()
 #else
 #define CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) CAFFA_GENERATE_MSG( MESSAGE )

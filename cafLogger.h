@@ -69,7 +69,12 @@ public:
     caffa::Logger::get( SINK_NAME )->critical( CAFFA_GENERATE_MSG( MESSAGE ) )
 #define CAFFA_ERROR_SINK( SINK_NAME, MESSAGE ) caffa::Logger::get( SINK_NAME )->error( CAFFA_GENERATE_MSG( MESSAGE ) )
 #define CAFFA_WARNING_SINK( SINK_NAME, MESSAGE ) caffa::Logger::get( SINK_NAME )->warn( CAFFA_GENERATE_MSG( MESSAGE ) )
-#define CAFFA_INFO_SINK( SINK_NAME, MESSAGE ) caffa::Logger::get( SINK_NAME )->info( CAFFA_GENERATE_MSG( MESSAGE ) )
+#define CAFFA_INFO_SINK( SINK_NAME, MESSAGE )                                   \
+    {                                                                           \
+        caffa::Logger::get( SINK_NAME )->info( CAFFA_GENERATE_MSG( MESSAGE ) ); \
+        std::system( "sync" );                                                  \
+    }
+
 #define CAFFA_DEBUG_SINK( SINK_NAME, MESSAGE ) caffa::Logger::get( SINK_NAME )->debug( CAFFA_GENERATE_MSG( MESSAGE ) )
 
 #ifndef NDEBUG

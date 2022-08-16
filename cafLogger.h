@@ -54,6 +54,8 @@ public:
 
 #define CAFFA_GENERATE_MSG( MESSAGE ) \
     static_cast<std::ostringstream&>( std::ostringstream().flush() << __FUNCTION__ << std::boolalpha << MESSAGE ).str()
+#define CAFFA_GENERATE_MSG( MESSAGE ) \
+    static_cast<std::ostringstream&>( std::ostringstream().flush() << __FUNCTION__ << std::boolalpha << MESSAGE ).str()
 
 #ifndef NDEBUG
 #define CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE )                                                                     \
@@ -62,7 +64,7 @@ public:
                                       << __LINE__ << "]: " << std::boolalpha << MESSAGE )                           \
         .str()
 #else
-#define CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) CAFFA_GENERATE_MSG( MESSAGE )
+#define CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) CAFFA_GENERATE_MSG( " "##MESSAGE )
 #endif
 
 #define CAFFA_CRITICAL_SINK( SINK_NAME, MESSAGE ) \

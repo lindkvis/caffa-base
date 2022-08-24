@@ -19,8 +19,7 @@
 //##################################################################################################
 #pragma once
 
-#include <spdlog/spdlog.h>
-
+#include <chrono>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -32,10 +31,21 @@ namespace caffa
 class Logger
 {
 public:
-    static void setApplicationLogLevel( spdlog::level::level_enum applicationLogLevel );
+    enum class Level : int
+    {
+        trace    = 0,
+        debug    = 1,
+        info     = 2,
+        warn     = 3,
+        err      = 4,
+        critical = 5,
+        off      = 6,
+        n_levels
+    };
 
-    static std::map<spdlog::level::level_enum, std::string> logLevels();
-    static spdlog::level::level_enum                        logLevelFromLabel( const std::string& label );
+    static void                         setApplicationLogLevel( Level applicationLogLevel );
+    static std::map<Level, std::string> logLevels();
+    static Level                        logLevelFromLabel( const std::string& label );
 
     static void
         registerDefaultFileLogger( const std::string& logFile, size_t maxFileSizeMiB = 5u, size_t maxRotatedFiles = 3u );
@@ -45,7 +55,15 @@ public:
                                     size_t             maxRotatedFiles = 3u );
     static void registerStdOutLogger( const std::string& logSinkName = "default" );
 
-    static std::shared_ptr<spdlog::logger> get( const std::string& sinkName );
+    static void log_sink( const std::string& sinkName, Level level, const std::string& message );
+    static void log( Level level, const std::string& message );
+
+    static void set_default_pattern( const std::string& pattern );
+    static void set_default_flush_interval( std::chrono::seconds seconds );
+    static void set_default_flush_level( Level level );
+
+    static void set_sink_pattern( const std::string& sinkName, const std::string& pattern );
+    static void set_sink_flush_level( const std::string& sinkName, Level level );
 
     static std::string simplifyFileName( const std::string& fileName );
 };
@@ -66,14 +84,19 @@ public:
 #endif
 
 #define CAFFA_CRITICAL_SINK( SINK_NAME, MESSAGE ) \
-    caffa::Logger::get( SINK_NAME )->critical( CAFFA_GENERATE_MSG( MESSAGE ) )
-#define CAFFA_ERROR_SINK( SINK_NAME, MESSAGE ) caffa::Logger::get( SINK_NAME )->error( CAFFA_GENERATE_MSG( MESSAGE ) )
-#define CAFFA_WARNING_SINK( SINK_NAME, MESSAGE ) caffa::Logger::get( SINK_NAME )->warn( CAFFA_GENERATE_MSG( MESSAGE ) )
-#define CAFFA_INFO_SINK( SINK_NAME, MESSAGE ) caffa::Logger::get( SINK_NAME )->info( CAFFA_GENERATE_MSG( MESSAGE ) )
-#define CAFFA_DEBUG_SINK( SINK_NAME, MESSAGE ) caffa::Logger::get( SINK_NAME )->debug( CAFFA_GENERATE_MSG( MESSAGE ) )
+    caffa::Logger::log_sink( SINK_NAME, caffa::Logger::Level::critical, CAFFA_GENERATE_MSG( MESSAGE ) )
+#define CAFFA_ERROR_SINK( SINK_NAME, MESSAGE ) \
+    caffa::Logger::log_sink( SINK_NAME, caffa::Logger::Level::err, CAFFA_GENERATE_MSG( MESSAGE ) )
+#define CAFFA_WARNING_SINK( SINK_NAME, MESSAGE ) \
+    caffa::Logger::log_sink( SINK_NAME, caffa::Logger::Level::warn, CAFFA_GENERATE_MSG( MESSAGE ) )
+#define CAFFA_INFO_SINK( SINK_NAME, MESSAGE ) \
+    caffa::Logger::log_sink( SINK_NAME, caffa::Logger::Level::info, CAFFA_GENERATE_MSG( MESSAGE ) )
+#define CAFFA_DEBUG_SINK( SINK_NAME, MESSAGE ) \
+    caffa::Logger::log_sink( SINK_NAME, caffa::Logger::Level::debug, CAFFA_GENERATE_MSG( MESSAGE ) )
 
 #ifndef NDEBUG
-#define CAFFA_TRACE_SINK( SINK_NAME, MESSAGE ) caffa::Logger::get( SINK_NAME )->trace( CAFFA_GENERATE_MSG( MESSAGE ) )
+#define CAFFA_TRACE_SINK( SINK_NAME, MESSAGE ) \
+    caffa::Logger::log_sink( SINK_NAME, caffa::Logger::Level::trace, CAFFA_GENERATE_MSG( MESSAGE ) )
 #else
 #define CAFFA_TRACE_SINK( SINK_NAME, MESSAGE ) \
     {                                          \
@@ -81,32 +104,36 @@ public:
 #endif
 
 #define CAFFA_CRITICAL_SINK_CODE_LINE( SINK_NAME, MESSAGE ) \
-    caffa::Logger::get( SINK_NAME )->critical( CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
+    caffa::Logger::log_sink( SINK_NAME, caffa::Logger::Level::critical, CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
 #define CAFFA_ERROR_SINK_CODE_LINE( SINK_NAME, MESSAGE ) \
-    caffa::Logger::get( SINK_NAME )->error( CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
+    caffa::Logger::log_sink( SINK_NAME, caffa::Logger::Level::err, CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
 #define CAFFA_WARNING_SINK_CODE_LINE( SINK_NAME, MESSAGE ) \
-    caffa::Logger::get( SINK_NAME )->warn( CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
+    caffa::Logger::log_sink( SINK_NAME, caffa::Logger::Level::warn, CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
 #define CAFFA_INFO_SINK_CODE_LINE( SINK_NAME, MESSAGE ) \
-    caffa::Logger::get( SINK_NAME )->info( CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
+    caffa::Logger::log_sink( SINK_NAME, caffa::Logger::Level::info, CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
 #define CAFFA_DEBUG_SINK_CODE_LINE( SINK_NAME, MESSAGE ) \
-    caffa::Logger::get( SINK_NAME )->debug( CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
+    caffa::Logger::log_sink( SINK_NAME, caffa::Logger::Level::debug, CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
 
 #ifndef NDEBUG
 #define CAFFA_TRACE_SINK_CODE_LINE( SINK_NAME, MESSAGE ) \
-    caffa::Logger::get( SINK_NAME )->trace( CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
+    caffa::Logger::log_sink( SINK_NAME, caffa::Logger::Level::trace, CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
 #else
 #define CAFFA_TRACE_SINK_CODE_LINE( SINK_NAME, MESSAGE ) \
     {                                                    \
     }
 #endif
 
-#define CAFFA_CRITICAL( MESSAGE ) spdlog::critical( CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
-#define CAFFA_ERROR( MESSAGE ) spdlog::error( CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
-#define CAFFA_WARNING( MESSAGE ) spdlog::warn( CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
-#define CAFFA_INFO( MESSAGE ) spdlog::info( CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
-#define CAFFA_DEBUG( MESSAGE ) spdlog::debug( CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
+#define CAFFA_CRITICAL( MESSAGE ) \
+    caffa::Logger::log( caffa::Logger::Level::critical, CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
+#define CAFFA_ERROR( MESSAGE ) caffa::Logger::log( caffa::Logger::Level::err, CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
+#define CAFFA_WARNING( MESSAGE ) \
+    caffa::Logger::log( caffa::Logger::Level::warn, CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
+#define CAFFA_INFO( MESSAGE ) caffa::Logger::log( caffa::Logger::Level::info, CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
+#define CAFFA_DEBUG( MESSAGE ) \
+    caffa::Logger::log( caffa::Logger::Level::debug, CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
 #ifndef NDEBUG
-#define CAFFA_TRACE( MESSAGE ) spdlog::trace( CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
+#define CAFFA_TRACE( MESSAGE ) \
+    caffa::Logger::log( caffa::Logger::Level::trace, CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) )
 #else
 #define CAFFA_TRACE( MESSAGE ) \
     {                          \

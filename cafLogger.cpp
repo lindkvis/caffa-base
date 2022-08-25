@@ -22,10 +22,10 @@
 #include "cafStringTools.h"
 
 #include "spdlog/sinks/base_sink.h"
-#include <spdlog/sinks/ostream_sink.h>
-#include <spdlog/sinks/rotating_file_sink.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/spdlog.h>
+#include "spdlog/sinks/ostream_sink.h"
+#include "spdlog/sinks/rotating_file_sink.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
+#include "spdlog/spdlog.h"
 
 #include <cassert>
 #include <chrono>
@@ -76,31 +76,44 @@ void Logger::registerDefaultFileLogger( const std::string& logFile,
 }
 
 void Logger::registerFileLogger( const std::string& logFile,
-                                 const std::string& sinkName,
+                                 const std::string& loggerName,
                                  size_t             maxFileSizeMiB /*= 5u */,
                                  size_t             maxRotatedFiles /*= 3u */ )
 {
-    if ( spdlog::get( sinkName ) )
+    std::shared_ptr<spdlog::logger> logger = spdlog::get( loggerName );
+    if ( logger )
     {
-        spdlog::drop( sinkName );
+        auto sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>( logFile,
+                                                                            maxFileSizeMiB * 1024u * 1024u,
+                                                                            maxRotatedFiles,
+                                                                            true );
+        logger->sinks().push_back( sink );
     }
-    auto logger = spdlog::rotating_logger_mt( sinkName, logFile, maxFileSizeMiB * 1024u * 1024u, maxRotatedFiles, true );
+    else
+    {
+        logger = spdlog::rotating_logger_mt( loggerName, logFile, maxFileSizeMiB * 1024u * 1024u, maxRotatedFiles, true );
+    }
 }
 
-void Logger::registerStdOutLogger( const std::string& sinkName )
+void Logger::registerStdOutLogger( const std::string& loggerName )
 {
-    auto console = spdlog::stdout_color_mt( sinkName );
+    auto console = spdlog::stdout_color_mt( loggerName );
 }
 
-void Logger::registerCustomSink( const std::string& sinkName, std::shared_ptr<spdlog::sinks::sink> sink )
+void Logger::registerCustomSink( const std::string& loggerName, std::shared_ptr<spdlog::sinks::sink> sink )
 {
-    auto logger = spdlog::get( sinkName );
+    std::shared_ptr<spdlog::logger> logger = spdlog::get( loggerName );
+    if ( !logger )
+    {
+        logger = std::make_shared<spdlog::logger>( loggerName );
+        spdlog::register_logger( logger );
+    }
     logger->sinks().push_back( sink );
 }
 
-void Logger::log_sink( const std::string& sinkName, Level level, const std::string& message )
+void Logger::log( const std::string& loggerName, Level level, const std::string& message )
 {
-    std::shared_ptr<spdlog::logger> logger = spdlog::get( sinkName );
+    std::shared_ptr<spdlog::logger> logger = spdlog::get( loggerName );
     if ( !logger ) logger = spdlog::default_logger();
 
     logger->log( static_cast<spdlog::level::level_enum>( level ), message );
@@ -125,14 +138,14 @@ void Logger::set_default_flush_level( Level level )
     spdlog::flush_on( static_cast<spdlog::level::level_enum>( level ) );
 }
 
-void Logger::set_sink_pattern( const std::string& sinkName, const std::string& pattern )
+void Logger::set_logger_pattern( const std::string& loggerName, const std::string& pattern )
 {
-    spdlog::get( sinkName )->set_pattern( pattern );
+    spdlog::get( loggerName )->set_pattern( pattern );
 }
 
-void Logger::set_sink_flush_level( const std::string& sinkName, Level level )
+void Logger::set_logger_flush_level( const std::string& loggerName, Level level )
 {
-    spdlog::get( sinkName )->flush_on( static_cast<spdlog::level::level_enum>( level ) );
+    spdlog::get( loggerName )->flush_on( static_cast<spdlog::level::level_enum>( level ) );
 }
 
 std::string Logger::simplifyFileName( const std::string& fullFilePath )

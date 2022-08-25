@@ -36,6 +36,7 @@
 
 #include <cctype>
 #include <functional>
+#include <iostream>
 #include <list>
 #include <locale>
 #include <memory>
@@ -82,6 +83,9 @@ Container split( const std::string& string, const std::string& delimiter )
 template <class Container = std::list<std::string>>
 Container split( const std::string& string, const std::regex& regex, bool skipEmptyParts = false )
 {
+    static_assert( std::is_same<typename Container::value_type, std::string>::value,
+                   "split() only creates containers of std::strings" );
+
     Container output;
 
     std::sregex_token_iterator it( string.begin(), string.end(), regex, -1 );

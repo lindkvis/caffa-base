@@ -21,6 +21,7 @@
 
 #include "cafStringTools.h"
 
+#include <spdlog/sinks/ostream_sink.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
@@ -74,20 +75,28 @@ void Logger::registerDefaultFileLogger( const std::string& logFile,
 }
 
 void Logger::registerFileLogger( const std::string& logFile,
-                                 const std::string& logSinkName,
+                                 const std::string& sinkName,
                                  size_t             maxFileSizeMiB /*= 5u */,
                                  size_t             maxRotatedFiles /*= 3u */ )
 {
-    if ( spdlog::get( logSinkName ) )
+    if ( spdlog::get( sinkName ) )
     {
-        spdlog::drop( logSinkName );
+        spdlog::drop( sinkName );
     }
-    auto logger = spdlog::rotating_logger_mt( logSinkName, logFile, maxFileSizeMiB * 1024u * 1024u, maxRotatedFiles, true );
+    auto logger = spdlog::rotating_logger_mt( sinkName, logFile, maxFileSizeMiB * 1024u * 1024u, maxRotatedFiles, true );
 }
 
-void Logger::registerStdOutLogger( const std::string& logSinkName )
+void Logger::registerStdOutLogger( const std::string& sinkName )
 {
-    auto console = spdlog::stdout_color_mt( logSinkName );
+    auto console = spdlog::stdout_color_mt( sinkName );
+}
+
+void Logger::registerStreamSink( const std::string& sinkName, std::ostream& stream )
+{
+    auto logger = spdlog::get( sinkName );
+    auto sink   = std::make_shared<spdlog::sinks::ostream_sink_mt>( stream );
+    sink->set_pattern( "[%n] %v" );
+    logger->sinks().push_back( sink );
 }
 
 void Logger::log_sink( const std::string& sinkName, Level level, const std::string& message )

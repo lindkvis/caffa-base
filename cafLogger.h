@@ -23,6 +23,7 @@
 #include <iostream>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <sstream>
 #include <string>
 
@@ -50,10 +51,11 @@ public:
     static void
         registerDefaultFileLogger( const std::string& logFile, size_t maxFileSizeMiB = 5u, size_t maxRotatedFiles = 3u );
     static void registerFileLogger( const std::string& logFile,
-                                    const std::string& logSinkName,
+                                    const std::string& sinkName,
                                     size_t             maxFileSizeMiB  = 5u,
                                     size_t             maxRotatedFiles = 3u );
-    static void registerStdOutLogger( const std::string& logSinkName = "default" );
+    static void registerStdOutLogger( const std::string& sinkName = "default" );
+    static void registerStreamSink( const std::string& sinkName, std::ostream& stream );
 
     static void log_sink( const std::string& sinkName, Level level, const std::string& message );
     static void log( Level level, const std::string& message );
@@ -66,6 +68,9 @@ public:
     static void set_sink_flush_level( const std::string& sinkName, Level level );
 
     static std::string simplifyFileName( const std::string& fileName );
+
+private:
+    static std::mutex s_mutex;
 };
 
 } // namespace caffa
@@ -73,15 +78,11 @@ public:
 #define CAFFA_GENERATE_MSG( MESSAGE ) \
     static_cast<std::ostringstream&>( std::ostringstream().flush() << __FUNCTION__ << std::boolalpha << MESSAGE ).str()
 
-#ifndef NDEBUG
 #define CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE )                                                                     \
     static_cast<std::ostringstream&>( std::ostringstream().flush()                                                  \
                                       << caffa::Logger::simplifyFileName( __FILE__ ) << "::" << __FUNCTION__ << "[" \
                                       << __LINE__ << "]: " << std::boolalpha << MESSAGE )                           \
         .str()
-#else
-#define CAFFA_GENERATE_CODE_LINE_MSG( MESSAGE ) CAFFA_GENERATE_MSG( MESSAGE )
-#endif
 
 #define CAFFA_CRITICAL_SINK( SINK_NAME, MESSAGE ) \
     caffa::Logger::log_sink( SINK_NAME, caffa::Logger::Level::critical, CAFFA_GENERATE_MSG( MESSAGE ) )

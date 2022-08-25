@@ -21,6 +21,7 @@
 
 #include "cafStringTools.h"
 
+#include "spdlog/sinks/base_sink.h"
 #include <spdlog/sinks/ostream_sink.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -91,11 +92,9 @@ void Logger::registerStdOutLogger( const std::string& sinkName )
     auto console = spdlog::stdout_color_mt( sinkName );
 }
 
-void Logger::registerStreamSink( const std::string& sinkName, std::ostream& stream )
+void Logger::registerCustomSink( const std::string& sinkName, std::shared_ptr<spdlog::sinks::sink> sink )
 {
     auto logger = spdlog::get( sinkName );
-    auto sink   = std::make_shared<spdlog::sinks::ostream_sink_mt>( stream );
-    sink->set_pattern( "[%n] %v" );
     logger->sinks().push_back( sink );
 }
 

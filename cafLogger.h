@@ -27,6 +27,11 @@
 #include <sstream>
 #include <string>
 
+namespace spdlog::sinks
+{
+class sink;
+}
+
 namespace caffa
 {
 class Logger
@@ -55,7 +60,7 @@ public:
                                     size_t             maxFileSizeMiB  = 5u,
                                     size_t             maxRotatedFiles = 3u );
     static void registerStdOutLogger( const std::string& sinkName = "default" );
-    static void registerStreamSink( const std::string& sinkName, std::ostream& stream );
+    static void registerCustomSink( const std::string& sinkName, std::shared_ptr<spdlog::sinks::sink> sink );
 
     static void log_sink( const std::string& sinkName, Level level, const std::string& message );
     static void log( Level level, const std::string& message );

@@ -39,7 +39,6 @@ using namespace caffa;
 
 void Logger::setApplicationLogLevel( Logger::Level applicationLogLevel )
 {
-    std::cout << "Setting log level to " << logLevels()[applicationLogLevel] << std::endl;
     spdlog::set_level( static_cast<spdlog::level::level_enum>( applicationLogLevel ) );
 }
 

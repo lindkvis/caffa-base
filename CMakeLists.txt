@@ -1,10 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 
-include(cmake/VersionFromGit.cmake)
-version_from_git(LOG OFF INCLUDE_HASH ON TIMESTAMP "%Y%m%d%H%M%S")
-
 if(NOT VERSION)
-  set(VERSION 0.0.0)
+  set(VERSION 0.15.0)
 endif()
 
 project(

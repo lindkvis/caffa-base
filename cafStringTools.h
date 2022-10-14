@@ -51,16 +51,33 @@
 
 namespace caffa::StringTools
 {
+/**
+ * @brief Join together all strings covered by the iterators with delimiters
+ *
+ * @tparam InputIt A templated iterator type. Usually automatically deduced.
+ * @param first Start iterator
+ * @param last End iterator
+ * @param delimiter String to join words with
+ * @return std::string One joined text string
+ */
 template <class InputIt>
-std::string join( InputIt first, InputIt last, const std::string& delimiter )
+std::string join( InputIt begin, InputIt end, const std::string& delimiter )
 {
-    if ( last == first ) return std::string();
-    return std::accumulate( next( first ), // there is at least 1 element, so OK.
-                            last,
-                            *first, // the initial value
+    if ( end == begin ) return std::string();
+    return std::accumulate( next( begin ), // there is at least 1 element, so OK.
+                            end,
+                            *begin, // the initial value
                             [&delimiter]( auto a, auto b ) { return a + delimiter + b; } );
 }
 
+/**
+ * @brief Split text string by a given delimiter
+ *
+ * @tparam Container the type of string container to create
+ * @param string The text string to split
+ * @param delimiter String to split on
+ * @return A container of strings
+ */
 template <class Container = std::list<std::string>>
 Container split( const std::string& string, const std::string& delimiter )
 {
@@ -80,6 +97,15 @@ Container split( const std::string& string, const std::string& delimiter )
     return output;
 }
 
+/**
+ * @brief Split text string by regex tokens
+ *
+ * @tparam Container the type of string container to create
+ * @param string The text string to split
+ * @param regex the regular expression
+ * @param skipEmptyParts If true will drop any empty entry
+ * @return A container of strings
+ */
 template <class Container = std::list<std::string>>
 Container split( const std::string& string, const std::regex& regex, bool skipEmptyParts = false )
 {
@@ -100,9 +126,30 @@ Container split( const std::string& string, const std::regex& regex, bool skipEm
     return output;
 }
 
+/**
+ * @brief Trim away white-space at start and end of string
+ *
+ * @param s string
+ * @return std::string
+ */
 std::string trim( std::string s );
+
+/**
+ * @brief Turn string to lower case
+ *
+ * @param s string
+ * @return std::string
+ */
 std::string tolower( std::string data );
 
+/**
+ * @brief Create a formatted string from any nunber of arguments
+ *
+ * @tparam Args
+ * @param format
+ * @param args
+ * @return std::string
+ */
 template <typename... Args>
 std::string string_format( const std::string& format, Args... args )
 {

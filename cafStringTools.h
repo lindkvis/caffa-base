@@ -1,23 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //
 //   Caffa
-//   Copyright (C) Gaute Lindkvist
-//
-//   This library may be used under the terms of either the GNU General Public License or
-//   the GNU Lesser General Public License as follows:
-//
-//   GNU General Public License Usage
-//   This library is free software: you can redistribute it and/or modify
-//   it under the terms of the GNU General Public License as published by
-//   the Free Software Foundation, either version 3 of the License, or
-//   (at your option) any later version.
-//
-//   This library is distributed in the hope that it will be useful, but WITHOUT ANY
-//   WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//   FITNESS FOR A PARTICULAR PURPOSE.
-//
-//   See the GNU General Public License at <<http://www.gnu.org/licenses/gpl.html>>
-//   for more details.
+//   Copyright (C) Kontur AS
 //
 //   GNU Lesser General Public License Usage
 //   This library is free software; you can redistribute it and/or modify
@@ -141,6 +125,15 @@ std::string trim( std::string s );
  * @return std::string
  */
 std::string tolower( std::string data );
+
+/**
+ * @brief Replace a portion of a string with something else
+ * @param data The full string to replace in
+ * @param replace What to replace
+ * @param with What to replace with
+ * @return Returns a copy with the replaced part
+ */
+std::string replace( const std::string& data, const std::string& replace, const std::string& with );
 
 /**
  * @brief Create a formatted string from any nunber of arguments

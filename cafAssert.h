@@ -1,12 +1,12 @@
 
 #pragma once
 
-#include "cafLogger.h"
-
-#include <cassert>
-#include <cstdlib>
-#include <iostream>
 #include <sstream>
+
+namespace caffa
+{
+void _caffa_assert( const std::string& errorMessage );
+}
 
 #define CAFFA_ASSERT( expr )                                                                \
     do                                                                                      \
@@ -15,7 +15,6 @@
         {                                                                                   \
             std::stringstream str;                                                          \
             str << __FILE__ << ":" << __LINE__ << ": CAFFA_ASSERT(" << #expr << ") failed"; \
-            CAFFA_CRITICAL( str.str() );                                                    \
-            std::abort();                                                                   \
+            caffa::_caffa_assert( str.str() );                                              \
         }                                                                                   \
     } while ( false )

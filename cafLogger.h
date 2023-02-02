@@ -1,22 +1,22 @@
-//##################################################################################################
+// ##################################################################################################
 //
-//   Caffa
-//   Copyright (C) 2021- 3D-Radar AS
+//    Caffa
+//    Copyright (C) 2021- 3D-Radar AS
 //
-//   GNU Lesser General Public License Usage
-//   This library is free software; you can redistribute it and/or modify
-//   it under the terms of the GNU Lesser General Public License as published by
-//   the Free Software Foundation; either version 2.1 of the License, or
-//   (at your option) any later version.
+//    GNU Lesser General Public License Usage
+//    This library is free software; you can redistribute it and/or modify
+//    it under the terms of the GNU Lesser General Public License as published by
+//    the Free Software Foundation; either version 2.1 of the License, or
+//    (at your option) any later version.
 //
-//   This library is distributed in the hope that it will be useful, but WITHOUT ANY
-//   WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//   FITNESS FOR A PARTICULAR PURPOSE.
+//    This library is distributed in the hope that it will be useful, but WITHOUT ANY
+//    WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//    FITNESS FOR A PARTICULAR PURPOSE.
 //
-//   See the GNU Lesser General Public License at <<http://www.gnu.org/licenses/lgpl-2.1.html>>
-//   for more details.
+//    See the GNU Lesser General Public License at <<http://www.gnu.org/licenses/lgpl-2.1.html>>
+//    for more details.
 //
-//##################################################################################################
+// ##################################################################################################
 #pragma once
 
 #include <chrono>
@@ -83,11 +83,17 @@ private:
 #define CAFFA_GENERATE_SIMPLE_MSG( MESSAGE ) \
     static_cast<std::ostringstream&>( std::ostringstream().flush() << __FUNCTION__ << std::boolalpha << MESSAGE ).str()
 
+#ifndef NDEBUG
 #define CAFFA_GENERATE_MSG( MESSAGE )                                                                               \
     static_cast<std::ostringstream&>( std::ostringstream().flush()                                                  \
                                       << caffa::Logger::simplifyFileName( __FILE__ ) << "::" << __FUNCTION__ << "[" \
                                       << __LINE__ << "]: " << std::boolalpha << MESSAGE )                           \
         .str()
+#else
+#define CAFFA_GENERATE_MSG( MESSAGE ) \
+    static_cast<std::ostringstream&>( std::ostringstream().flush() << std::boolalpha << MESSAGE ).str()
+
+#endif
 
 #define CAFFA_CRITICAL_SINK( LOGGER_NAME, MESSAGE ) \
     caffa::Logger::log( LOGGER_NAME, caffa::Logger::Level::critical, CAFFA_GENERATE_SIMPLE_MSG( MESSAGE ) )

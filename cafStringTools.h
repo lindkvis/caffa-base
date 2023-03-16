@@ -63,7 +63,7 @@ std::string join( InputIt begin, InputIt end, const std::string& delimiter )
  * @return A container of strings
  */
 template <class Container = std::list<std::string>>
-Container split( const std::string& string, const std::string& delimiter )
+Container split( const std::string& string, const std::string& delimiter, bool skipEmptyParts = false )
 {
     static_assert( std::is_same<typename Container::value_type, std::string>::value,
                    "split() only creates containers of std::strings" );
@@ -73,7 +73,8 @@ Container split( const std::string& string, const std::string& delimiter )
     size_t end   = string.find( delimiter );
     while ( end != std::string::npos )
     {
-        output.push_back( string.substr( start, end - start ) );
+        auto token = string.substr( start, end - start );
+        if ( !skipEmptyParts || token.length() > 0u ) output.push_back( token );
         start = end + delimiter.length();
         end   = string.find( delimiter, start );
     }

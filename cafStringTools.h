@@ -158,4 +158,23 @@ std::string string_format( const std::string& format, Args... args )
     return std::string( buf.get(), buf.get() + size - 1 ); // We don't want the '\0' inside
 }
 
+constexpr bool islower( char c ) noexcept
+{
+    return c >= 'a' && c <= 'z';
+}
+
+constexpr bool isupper( char c ) noexcept
+{
+    return c >= 'A' && c <= 'Z';
+}
+
+constexpr bool isalpha( char c ) noexcept
+{
+    return islower( c ) || isupper( c );
+}
+
+constexpr bool isdigit( int c ) noexcept
+{
+    return c >= '0' && c <= '9';
+}
 } // namespace caffa::StringTools

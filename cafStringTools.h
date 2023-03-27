@@ -28,6 +28,7 @@
 #include <regex>
 #include <stdexcept>
 #include <string>
+#include <type_traits>
 
 #ifdef MSVC
 #pragma warning( disable : 4996 )
@@ -35,6 +36,24 @@
 
 namespace caffa::StringTools
 {
+/**
+ * A fixed string class that is possible to use as a template parameter
+ */
+template <std::size_t N>
+struct FixedString
+{
+    std::array<char, N + 1> data{};
+
+    constexpr FixedString( const char* string ) noexcept { std::copy_n( string, N + 1, data.data() ); }
+
+    constexpr operator std::string_view() const noexcept { return std::string_view( data.data(), N ); }
+
+    constexpr auto size() const noexcept { return N; }
+};
+
+template <unsigned N>
+FixedString( char const ( & )[N] ) -> FixedString<N - 1>;
+
 /**
  * @brief Join together all strings covered by the iterators with delimiters
  *

@@ -20,6 +20,7 @@
 #pragma once
 
 #include <chrono>
+#include <functional>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -73,15 +74,23 @@ public:
     static void set_logger_flush_level( const std::string& loggerName, Level level );
 
     static std::string simplifyFileName( const std::string& fileName );
+    static std::string simplifyFunctionName( const std::string& functionName );
+
+    static void setFunctionNameReplacer( std::function<std::string( std::string )> functionNameReplacer );
 
 private:
     static std::mutex s_mutex;
+
+    static std::function<std::string( std::string )> s_functionNameReplacer;
 };
 
 } // namespace caffa
 
-#define CAFFA_GENERATE_SIMPLE_MSG( MESSAGE ) \
-    static_cast<std::ostringstream&>( std::ostringstream().flush() << __FUNCTION__ << std::boolalpha << MESSAGE ).str()
+#define CAFFA_GENERATE_SIMPLE_MSG( MESSAGE )                                                                 \
+    static_cast<std::ostringstream&>( std::ostringstream().flush()                                           \
+                                      << "\"" << caffa::Logger::simplifyFunctionName( __FUNCTION__ ) << "\"" \
+                                      << std::boolalpha << MESSAGE )                                         \
+        .str()
 
 #ifndef NDEBUG
 #define CAFFA_GENERATE_MSG( MESSAGE )                                                                               \

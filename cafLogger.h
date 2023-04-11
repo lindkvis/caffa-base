@@ -86,11 +86,8 @@ private:
 
 } // namespace caffa
 
-#define CAFFA_GENERATE_SIMPLE_MSG( MESSAGE )                                                                 \
-    static_cast<std::ostringstream&>( std::ostringstream().flush()                                           \
-                                      << "\"" << caffa::Logger::simplifyFunctionName( __FUNCTION__ ) << "\"" \
-                                      << std::boolalpha << MESSAGE )                                         \
-        .str()
+#define CAFFA_GENERATE_SIMPLE_MSG( MESSAGE ) \
+    static_cast<std::ostringstream&>( std::ostringstream().flush() << std::boolalpha << MESSAGE ).str()
 
 #ifndef NDEBUG
 #define CAFFA_GENERATE_MSG( MESSAGE )                                                                               \

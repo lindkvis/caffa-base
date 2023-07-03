@@ -98,7 +98,11 @@ void Logger::registerFileLogger( const std::string& logFile,
 
 void Logger::registerStdOutLogger( const std::string& loggerName )
 {
-    auto console = spdlog::stdout_color_mt( loggerName );
+    auto logger = spdlog::stdout_color_mt( loggerName );
+    if ( loggerName == "default" )
+    {
+        spdlog::set_default_logger( logger );
+    }
 }
 
 void Logger::registerCustomSink( const std::string& loggerName, std::shared_ptr<spdlog::sinks::sink> sink )

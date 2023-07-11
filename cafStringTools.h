@@ -25,6 +25,7 @@
 #include <locale>
 #include <memory>
 #include <numeric>
+#include <optional>
 #include <regex>
 #include <stdexcept>
 #include <string>
@@ -196,4 +197,19 @@ constexpr bool isdigit( int c ) noexcept
 {
     return c >= '0' && c <= '9';
 }
+
+/**
+ * Convert a string to an int64 with fail checking
+ * @param string A string to convert
+ * @return An optional int64_t where it is valid if the conversion was valid.
+ */
+std::optional<int64_t> toInt64( const std::string& string );
+
+/**
+ * Convert a string to a double with fail checking
+ * @param string A string to convert
+ * @return An optional double where it is valid if the conversion was valid.
+ */
+std::optional<double> toDouble( const std::string& string );
+
 } // namespace caffa::StringTools

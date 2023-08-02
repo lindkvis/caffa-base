@@ -91,14 +91,19 @@ Container split( const std::string& string, const std::string& delimiter, bool s
 
     size_t start = 0u;
     size_t end   = string.find( delimiter );
-    while ( end != std::string::npos )
+    while ( true )
     {
         auto token = string.substr( start, end - start );
-        if ( !skipEmptyParts || token.length() > 0u ) output.push_back( token );
+        if ( !skipEmptyParts || token.length() > 0u )
+        {
+            output.push_back( token );
+        }
+        if ( end == std::string::npos ) break;
+
         start = end + delimiter.length();
         end   = string.find( delimiter, start );
     }
-    output.push_back( string.substr( start, end ) );
+
     return output;
 }
 

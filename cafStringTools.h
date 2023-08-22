@@ -217,4 +217,6 @@ std::optional<int64_t> toInt64( const std::string& string );
  */
 std::optional<double> toDouble( const std::string& string );
 
+std::string decodeBase64( const std::string input );
+
 } // namespace caffa::StringTools

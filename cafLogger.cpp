@@ -29,6 +29,7 @@
 
 #include <cassert>
 #include <chrono>
+#include <filesystem>
 #include <fstream>
 #include <iomanip>
 #include <random>
@@ -155,11 +156,8 @@ void Logger::set_logger_flush_level( const std::string& loggerName, Level level 
 
 std::string Logger::simplifyFileName( const std::string& fullFilePath )
 {
-    auto filePath       = caffa::StringTools::split( fullFilePath, "/" );
-    auto fileName       = !filePath.empty() ? filePath.back() : fullFilePath;
-    auto fileComponents = caffa::StringTools::split( fileName, "." );
-    fileName            = !fileComponents.empty() ? fileComponents.front() : fileName;
-    return fileName;
+    auto filePath = std::filesystem::path( fullFilePath );
+    return filePath.stem();
 }
 
 std::string Logger::simplifyFunctionName( const std::string& functionName )

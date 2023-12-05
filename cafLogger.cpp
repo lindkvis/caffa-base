@@ -157,7 +157,7 @@ void Logger::set_logger_flush_level( const std::string& loggerName, Level level 
 std::string Logger::simplifyFileName( const std::string& fullFilePath )
 {
     auto filePath = std::filesystem::path( fullFilePath );
-    return filePath.stem();
+    return filePath.stem().native();
 }
 
 std::string Logger::simplifyFunctionName( const std::string& functionName )

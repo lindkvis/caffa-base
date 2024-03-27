@@ -211,6 +211,13 @@ constexpr bool isdigit( int c ) noexcept
 std::optional<int64_t> toInt64( const std::string& string );
 
 /**
+ * Convert a string to an unsigned int64 with fail checking
+ * @param string A string to convert
+ * @return An optional uint64_t where it is valid if the conversion was valid.
+ */
+std::optional<uint64_t> toUint64( const std::string& string );
+
+/**
  * Convert a string to an uint32 with fail checking
  * @param string A string to convert
  * @return An optional uint32_t where it is valid if the conversion was valid.

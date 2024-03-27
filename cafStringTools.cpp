@@ -48,14 +48,25 @@ std::optional<int64_t> caffa::StringTools::toInt64( const std::string& string )
     return std::optional<int64_t>();
 }
 
-std::optional<uint32_t> caffa::StringTools::toUint32( const std::string& string )
+std::optional<uint64_t> caffa::StringTools::toUint64( const std::string& string )
 {
     char*    endptr;
+    uint64_t result = strtoull( string.c_str(), &endptr, 10 );
+    if ( endptr && *endptr == 0 )
+    {
+        return result;
+    }
+    return std::optional<uint64_t>();
+}
+
+std::optional<uint32_t> caffa::StringTools::toUint32( const std::string& string )
+{
+    char*         endptr;
     unsigned long result = strtoul( string.c_str(), &endptr, 10 );
     if ( endptr && *endptr == 0 )
     {
-        CAFFA_ASSERT(result < std::numeric_limits<uint32_t>::max());
-        return static_cast<uint32_t>(result);
+        CAFFA_ASSERT( result < std::numeric_limits<uint32_t>::max() );
+        return static_cast<uint32_t>( result );
     }
     return std::optional<uint32_t>();
 }

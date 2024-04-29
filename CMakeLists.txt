@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 if(NOT VERSION)
-  set(VERSION 0.90.0)
+  set(VERSION 1.0.0)
 endif()
 
 project(

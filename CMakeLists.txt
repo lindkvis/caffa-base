@@ -13,12 +13,14 @@ message(STATUS "Building ${PROJECT_NAME} version ${PROJECT_VERSION_MAJOR}.${PROJ
 
 set(CMAKE_CXX_STANDARD 20)
 
+option(CAFFA_BUILD_UNIT_TESTS "Build unit tests" ON)
+
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-set(PUBLIC_HEADERS cafAssert.h cafLogger.h cafStringTools.h cafNotNull.h)
-set(PROJECT_FILES cafAssert.cpp cafLogger.cpp cafStringTools.cpp)
+set(PUBLIC_HEADERS cafAssert.h cafLogger.h cafStringTools.h cafNotNull.h cafUuidGenerator.h)
+set(PROJECT_FILES cafAssert.cpp cafLogger.cpp cafStringTools.cpp cafUuidGenerator.cpp)
 
 if(CAFFA_BUILD_SHARED)
   message(STATUS "Building ${PROJECT_NAME} shared")
@@ -38,6 +40,12 @@ if(MSVC)
   target_compile_definitions(${PROJECT_NAME} PRIVATE _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING)
   set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "/W4 /wd4100 /wd4127")
   set_target_properties(${PROJECT_NAME} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+endif()
+
+if(CAFFA_BUILD_UNIT_TESTS)
+  add_subdirectory(Base_UnitTests)
+  enable_testing()
+  add_test(caffaBase_UnitTests ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/caffaBase_UnitTests)
 endif()
 
 target_link_libraries(${PROJECT_NAME})

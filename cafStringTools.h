@@ -20,9 +20,7 @@
 
 #include <cctype>
 #include <functional>
-#include <iostream>
 #include <list>
-#include <locale>
 #include <memory>
 #include <numeric>
 #include <optional>

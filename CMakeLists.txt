@@ -1,12 +1,10 @@
 cmake_minimum_required(VERSION 3.22)
 
-if(NOT VERSION)
-  set(VERSION 1.5.0)
-endif()
+set(CAFFA_BASE_VERSION 1.5.1)
 
 project(
   caffaBase
-  VERSION ${VERSION}
+  VERSION ${CAFFA_BASE_VERSION}
   DESCRIPTION "Caffa Base Utility Library")
 
 message(STATUS "Building ${PROJECT_NAME} version ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}-${GIT_HASH}")

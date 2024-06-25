@@ -7,6 +7,8 @@ project(
   VERSION ${CAFFA_BASE_VERSION}
   DESCRIPTION "Caffa Base Utility Library")
 
+include(cmake/git_submodule.cmake)
+
 message(STATUS "Building ${PROJECT_NAME} version ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}-${GIT_HASH}")
 
 set(CMAKE_CXX_STANDARD 20)
@@ -48,7 +50,7 @@ if(MSVC)
   set_target_properties(${PROJECT_NAME} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 endif()
 
-add_subdirectory(gtest)
+add_git_submodule(gtest TRUE)
 
 if(CAFFA_BUILD_UNIT_TESTS)
   add_subdirectory(Base_UnitTests)

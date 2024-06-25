@@ -48,6 +48,8 @@ if(MSVC)
   set_target_properties(${PROJECT_NAME} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 endif()
 
+add_subdirectory(gtest)
+
 if(CAFFA_BUILD_UNIT_TESTS)
   add_subdirectory(Base_UnitTests)
   enable_testing()

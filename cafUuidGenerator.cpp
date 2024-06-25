@@ -1,6 +1,6 @@
 // ##################################################################################################
 //
-//    Custom Visualization Core library
+//    Caffa
 //    Copyright (C) 2022- Kontur AS
 //
 //    This library may be used under the terms of the GNU Lesser General Public License as follows:
@@ -23,7 +23,7 @@
 
 #include "cafLogger.h"
 
-#include "stduuid/uuid.h"
+#include <uuid.h>
 
 #include <chrono>
 #include <iomanip>

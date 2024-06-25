@@ -50,6 +50,7 @@ if(MSVC)
   set_target_properties(${PROJECT_NAME} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 endif()
 
+add_git_submodule(stduuid TRUE)
 add_git_submodule(gtest TRUE)
 
 if(CAFFA_BUILD_UNIT_TESTS)
@@ -58,7 +59,7 @@ if(CAFFA_BUILD_UNIT_TESTS)
   add_test(caffaBase_UnitTests ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/caffaBase_UnitTests)
 endif()
 
-target_link_libraries(${PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME} stduuid)
 
 install(
   TARGETS ${PROJECT_NAME}

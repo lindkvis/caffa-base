@@ -32,7 +32,7 @@ endif()
 add_definitions(-DGTEST_HAS_STD_WSTRING=0)
 add_definitions(-DSPDLOG_NO_ATOMIC_LEVELS)
 set(UUID_USING_CXX20_SPAN
-    ON
+    OFF
     CACHE INTERNAL "Use CXX20 span")
 set(UUID_BUILD_TESTS
     OFF

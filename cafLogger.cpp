@@ -45,6 +45,14 @@ void Logger::setApplicationLogLevel( Logger::Level applicationLogLevel )
     spdlog::set_level( static_cast<spdlog::level::level_enum>( applicationLogLevel ) );
 }
 
+void Logger::setLogLevel( const std::string& loggerName, Logger::Level logLevel )
+{
+    std::shared_ptr<spdlog::logger> logger = spdlog::get( loggerName );
+    if ( !logger ) logger = spdlog::default_logger();
+
+    logger->set_level( static_cast<spdlog::level::level_enum>( logLevel ) );
+}
+
 std::map<Logger::Level, std::string> Logger::logLevels()
 {
     std::map<Logger::Level, std::string> all_levels;

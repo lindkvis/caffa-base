@@ -49,7 +49,9 @@ public:
         n_levels
     };
 
-    static void                         setApplicationLogLevel( Level applicationLogLevel );
+    static void setApplicationLogLevel( Level applicationLogLevel );
+    static void setLogLevel( const std::string& loggerName, Level applicationLogLevel );
+
     static std::map<Level, std::string> logLevels();
     static Level                        logLevelFromLabel( const std::string& label );
 
@@ -89,10 +91,10 @@ private:
     dynamic_cast<std::ostringstream&>( std::ostringstream().flush() << std::boolalpha << MESSAGE ).str()
 
 #ifndef NDEBUG
-#define CAFFA_GENERATE_MSG( MESSAGE )                                                                               \
+#define CAFFA_GENERATE_MSG( MESSAGE )                                                                                \
     dynamic_cast<std::ostringstream&>( std::ostringstream().flush()                                                  \
-                                      << caffa::Logger::simplifyFileName( __FILE__ ) << "::" << __FUNCTION__ << "[" \
-                                      << __LINE__ << "]: " << std::boolalpha << MESSAGE )                           \
+                                       << caffa::Logger::simplifyFileName( __FILE__ ) << "::" << __FUNCTION__ << "[" \
+                                       << __LINE__ << "]: " << std::boolalpha << MESSAGE )                           \
         .str()
 #else
 #define CAFFA_GENERATE_MSG( MESSAGE ) \

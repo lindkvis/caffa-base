@@ -57,15 +57,15 @@ FixedString( char const ( & )[N] ) -> FixedString<N - 1>;
  * @brief Join together all strings covered by the iterators with delimiters
  *
  * @tparam InputIt A templated iterator type. Usually automatically deduced.
- * @param first Start iterator
- * @param last End iterator
+ * @param begin Start iterator
+ * @param end End iterator
  * @param delimiter String to join words with
  * @return std::string One joined text string
  */
 template <class InputIt>
 std::string join( InputIt begin, InputIt end, const std::string& delimiter )
 {
-    if ( end == begin ) return std::string();
+    if ( end == begin ) return {};
     return std::accumulate( next( begin ), // there is at least 1 element, so OK.
                             end,
                             *begin, // the initial value
@@ -81,9 +81,9 @@ std::string join( InputIt begin, InputIt end, const std::string& delimiter )
  * @return A container of strings
  */
 template <class Container = std::list<std::string>>
-Container split( const std::string& string, const std::string& delimiter, bool skipEmptyParts = false )
+Container split( const std::string& string, const std::string& delimiter, const bool skipEmptyParts = false )
 {
-    static_assert( std::is_same<typename Container::value_type, std::string>::value,
+    static_assert( std::is_same_v<typename Container::value_type, std::string>,
                    "split() only creates containers of std::strings" );
     Container output;
 
@@ -92,7 +92,7 @@ Container split( const std::string& string, const std::string& delimiter, bool s
     while ( true )
     {
         auto token = string.substr( start, end - start );
-        if ( !skipEmptyParts || token.length() > 0u )
+        if ( !skipEmptyParts || !token.empty() )
         {
             output.push_back( token );
         }
@@ -115,9 +115,9 @@ Container split( const std::string& string, const std::string& delimiter, bool s
  * @return A container of strings
  */
 template <class Container = std::list<std::string>>
-Container split( const std::string& string, const std::regex& regex, bool skipEmptyParts = false )
+Container split( const std::string& string, const std::regex& regex, const bool skipEmptyParts = false )
 {
-    static_assert( std::is_same<typename Container::value_type, std::string>::value,
+    static_assert( std::is_same_v<typename Container::value_type, std::string>,
                    "split() only creates containers of std::strings" );
 
     Container output;
@@ -145,7 +145,7 @@ std::string trim( std::string s );
 /**
  * @brief Turn string to lower case
  *
- * @param s string
+ * @param data string
  * @return std::string
  */
 std::string tolower( std::string data );
@@ -175,23 +175,23 @@ std::string string_format( const std::string& format, Args... args )
     {
         throw std::runtime_error( "Error during formatting." );
     }
-    auto size = static_cast<size_t>( size_s );
-    auto buf  = std::make_unique<char[]>( size );
+    const auto size = static_cast<size_t>( size_s );
+    const auto buf  = std::make_unique<char[]>( size );
     std::snprintf( buf.get(), size, format.c_str(), args... );
-    return std::string( buf.get(), buf.get() + size - 1 ); // We don't want the '\0' inside
+    return { buf.get(), buf.get() + size - 1 }; // We don't want the '\0' inside
 }
 
-constexpr bool islower( char c ) noexcept
+constexpr bool islower( const char c ) noexcept
 {
     return c >= 'a' && c <= 'z';
 }
 
-constexpr bool isupper( char c ) noexcept
+constexpr bool isupper( const char c ) noexcept
 {
     return c >= 'A' && c <= 'Z';
 }
 
-constexpr bool isalpha( char c ) noexcept
+constexpr bool isalpha( const char c ) noexcept
 {
     return islower( c ) || isupper( c );
 }

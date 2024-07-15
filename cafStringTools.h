@@ -41,11 +41,11 @@ namespace caffa::StringTools
 template <std::size_t N>
 struct FixedString
 {
-    std::array<char, N + 1> data{};
+    char data[N + 1]{};
 
-    constexpr FixedString( const char* string ) noexcept { std::copy_n( string, N + 1, data.data() ); }
+    constexpr FixedString( const char* string ) noexcept { std::copy_n( string, N + 1, data ); }
 
-    constexpr operator std::string_view() const noexcept { return std::string_view( data.data(), N ); }
+    constexpr operator std::string_view() const noexcept { return std::string_view( data, N ); }
 
     constexpr auto size() const noexcept { return N; }
 };

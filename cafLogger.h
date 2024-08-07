@@ -98,7 +98,7 @@ private:
         .str()
 #else
 #define CAFFA_GENERATE_MSG( MESSAGE ) \
-    static_cast<std::ostringstream&>( std::ostringstream().flush() << std::boolalpha << MESSAGE ).str()
+    dynamic_cast<std::ostringstream&>( std::ostringstream().flush() << std::boolalpha << MESSAGE ).str()
 
 #endif
 

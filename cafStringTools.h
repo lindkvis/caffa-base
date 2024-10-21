@@ -18,6 +18,8 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include <boost/regex.hpp>
+
 #include <cctype>
 #include <functional>
 #include <iostream>
@@ -26,7 +28,6 @@
 #include <memory>
 #include <numeric>
 #include <optional>
-#include <regex>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -117,15 +118,15 @@ Container split( const std::string& string, const std::string& delimiter, bool s
  * @return A container of strings
  */
 template <class Container = std::list<std::string>>
-Container split( const std::string& string, const std::regex& regex, bool skipEmptyParts = false )
+Container split( const std::string& string, const boost::regex& regex, bool skipEmptyParts = false )
 {
     static_assert( std::is_same<typename Container::value_type, std::string>::value,
                    "split() only creates containers of std::strings" );
 
     Container output;
 
-    std::sregex_token_iterator it( string.begin(), string.end(), regex, -1 );
-    std::sregex_token_iterator end;
+    boost::sregex_token_iterator it( string.begin(), string.end(), regex, -1 );
+    boost::sregex_token_iterator end;
 
     while ( it != end )
     {

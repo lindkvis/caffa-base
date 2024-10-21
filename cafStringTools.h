@@ -18,9 +18,13 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include <boost/regex.hpp>
+
 #include <cctype>
 #include <functional>
+#include <iostream>
 #include <list>
+#include <locale>
 #include <memory>
 #include <numeric>
 #include <optional>
@@ -41,11 +45,11 @@ namespace caffa::StringTools
 template <std::size_t N>
 struct FixedString
 {
-    char data[N + 1]{};
+    std::array<char, N + 1> data{};
 
-    constexpr FixedString( const char* string ) noexcept { std::copy_n( string, N + 1, data ); }
+    constexpr FixedString( const char* string ) noexcept { std::copy_n( string, N + 1, data.data() ); }
 
-    constexpr operator std::string_view() const noexcept { return std::string_view( data, N ); }
+    constexpr operator std::string_view() const noexcept { return std::string_view( data.data(), N ); }
 
     constexpr auto size() const noexcept { return N; }
 };
@@ -57,15 +61,15 @@ FixedString( char const ( & )[N] ) -> FixedString<N - 1>;
  * @brief Join together all strings covered by the iterators with delimiters
  *
  * @tparam InputIt A templated iterator type. Usually automatically deduced.
- * @param begin Start iterator
- * @param end End iterator
+ * @param first Start iterator
+ * @param last End iterator
  * @param delimiter String to join words with
  * @return std::string One joined text string
  */
 template <class InputIt>
 std::string join( InputIt begin, InputIt end, const std::string& delimiter )
 {
-    if ( end == begin ) return {};
+    if ( end == begin ) return std::string();
     return std::accumulate( next( begin ), // there is at least 1 element, so OK.
                             end,
                             *begin, // the initial value
@@ -81,9 +85,9 @@ std::string join( InputIt begin, InputIt end, const std::string& delimiter )
  * @return A container of strings
  */
 template <class Container = std::list<std::string>>
-Container split( const std::string& string, const std::string& delimiter, const bool skipEmptyParts = false )
+Container split( const std::string& string, const std::string& delimiter, bool skipEmptyParts = false )
 {
-    static_assert( std::is_same_v<typename Container::value_type, std::string>,
+    static_assert( std::is_same<typename Container::value_type, std::string>::value,
                    "split() only creates containers of std::strings" );
     Container output;
 
@@ -92,7 +96,7 @@ Container split( const std::string& string, const std::string& delimiter, const 
     while ( true )
     {
         auto token = string.substr( start, end - start );
-        if ( !skipEmptyParts || !token.empty() )
+        if ( !skipEmptyParts || token.length() > 0u )
         {
             output.push_back( token );
         }
@@ -115,15 +119,15 @@ Container split( const std::string& string, const std::string& delimiter, const 
  * @return A container of strings
  */
 template <class Container = std::list<std::string>>
-Container split( const std::string& string, const std::regex& regex, const bool skipEmptyParts = false )
+Container split( const std::string& string, const boost::regex& regex, const bool skipEmptyParts = false )
 {
-    static_assert( std::is_same_v<typename Container::value_type, std::string>,
+    static_assert( std::is_same<typename Container::value_type, std::string>::value,
                    "split() only creates containers of std::strings" );
 
     Container output;
 
-    std::sregex_token_iterator it( string.begin(), string.end(), regex, -1 );
-    std::sregex_token_iterator end;
+    boost::sregex_token_iterator it( string.begin(), string.end(), regex, -1 );
+    boost::sregex_token_iterator end;
 
     while ( it != end )
     {
@@ -145,7 +149,7 @@ std::string trim( std::string s );
 /**
  * @brief Turn string to lower case
  *
- * @param data string
+ * @param s string
  * @return std::string
  */
 std::string tolower( std::string data );
@@ -175,23 +179,23 @@ std::string string_format( const std::string& format, Args... args )
     {
         throw std::runtime_error( "Error during formatting." );
     }
-    const auto size = static_cast<size_t>( size_s );
-    const auto buf  = std::make_unique<char[]>( size );
+    auto size = static_cast<size_t>( size_s );
+    auto buf  = std::make_unique<char[]>( size );
     std::snprintf( buf.get(), size, format.c_str(), args... );
-    return { buf.get(), buf.get() + size - 1 }; // We don't want the '\0' inside
+    return std::string( buf.get(), buf.get() + size - 1 ); // We don't want the '\0' inside
 }
 
-constexpr bool islower( const char c ) noexcept
+constexpr bool islower( char c ) noexcept
 {
     return c >= 'a' && c <= 'z';
 }
 
-constexpr bool isupper( const char c ) noexcept
+constexpr bool isupper( char c ) noexcept
 {
     return c >= 'A' && c <= 'Z';
 }
 
-constexpr bool isalpha( const char c ) noexcept
+constexpr bool isalpha( char c ) noexcept
 {
     return islower( c ) || isupper( c );
 }

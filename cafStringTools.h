@@ -20,6 +20,7 @@
 
 #include <boost/regex.hpp>
 
+#include <array>
 #include <cctype>
 #include <functional>
 #include <iostream>

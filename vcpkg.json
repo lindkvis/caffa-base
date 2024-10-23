@@ -3,6 +3,9 @@
   "version-string": "latest",
   "dependencies": [
     {
+      "name": "gtest"
+    },
+    {
       "name": "boost-regex"
     }
   ]

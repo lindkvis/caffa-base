@@ -53,7 +53,6 @@ if (MSVC)
 endif ()
 
 add_git_submodule(stduuid TRUE)
-add_git_submodule(gtest TRUE)
 
 if (CAFFA_BUILD_UNIT_TESTS)
     add_subdirectory(Base_UnitTests)

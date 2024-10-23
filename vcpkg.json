@@ -1,4 +1,9 @@
 {
   "name": "main",
-  "version-string": "latest"
+  "version-string": "latest",
+  "dependencies": [
+    {
+      "name": "boost-regex"
+    }
+  ]
 }

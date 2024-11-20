@@ -21,34 +21,28 @@
 // ##################################################################################################
 #pragma once
 
+#include <boost/uuid/uuid_generators.hpp>
+
 #include <memory>
 #include <mutex>
 #include <random>
 
-namespace uuids
-{
-template <typename GeneratorT>
-class basic_uuid_random_generator;
-using uuid_random_generator = basic_uuid_random_generator<std::mt19937>;
-} // namespace uuids
-
 namespace caffa
 {
-class UuidGenerator
-{
-public:
-    static std::string generate();
+    class UuidGenerator
+    {
+    public:
+        static std::string generate();
 
-    static bool isUuid( const std::string& string );
+        static bool isUuid(const std::string& string);
 
 #ifndef NDEBUG
     static bool     s_useDummyUuids;
     static uint64_t s_dummyUuidCounter;
 #endif
 
-private:
-    static std::unique_ptr<uuids::uuid_random_generator> s_uuidGenerator;
-    static std::mutex                                    s_mutex;
-};
-
+    private:
+        static std::unique_ptr<boost::uuids::random_generator> s_uuidGenerator;
+        static std::mutex s_mutex;
+    };
 } // namespace caffa

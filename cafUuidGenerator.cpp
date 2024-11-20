@@ -21,14 +21,14 @@
 // ##################################################################################################
 #include "cafUuidGenerator.h"
 
-#include "cafLogger.h"
+#include <iostream>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/uuid/string_generator.hpp>
 
-#include <uuid.h>
-
-#include <chrono>
+#ifndef NDEBUG
 #include <iomanip>
-#include <regex>
 #include <sstream>
+#endif
 
 using namespace caffa;
 using namespace std::chrono;
@@ -38,38 +38,38 @@ bool     UuidGenerator::s_useDummyUuids    = false;
 uint64_t UuidGenerator::s_dummyUuidCounter = 0u;
 #endif
 
-std::unique_ptr<uuids::uuid_random_generator> UuidGenerator::s_uuidGenerator;
-std::mutex                                    UuidGenerator::s_mutex;
+std::unique_ptr<boost::uuids::random_generator> UuidGenerator::s_uuidGenerator;
+std::mutex                                      UuidGenerator::s_mutex;
 
 std::string UuidGenerator::generate()
 {
     std::scoped_lock lock( s_mutex );
 #ifndef NDEBUG
-    if ( s_useDummyUuids )
+    if (s_useDummyUuids)
     {
         std::stringstream ss;
         ss << std::hex << "00000000-0000-0000-0000-" << std::setfill( '0' ) << std::setw( 12 ) << s_dummyUuidCounter++;
         return ss.str();
     }
 #endif
-    if ( !s_uuidGenerator )
+    if (!s_uuidGenerator)
     {
-        auto     now                           = steady_clock::now();
-        auto     nanoseconds_since_epoch       = now.time_since_epoch();
-        auto     seconds_since_epoch           = duration_cast<seconds>( nanoseconds_since_epoch );
-        unsigned nanoseconds_since_last_second = static_cast<unsigned>(
-            ( nanoseconds_since_epoch - duration_cast<nanoseconds>( seconds_since_epoch ) ).count() );
-
-        s_uuidGenerator =
-            std::make_unique<uuids::uuid_random_generator>( new std::mt19937( nanoseconds_since_last_second ) );
+        s_uuidGenerator = std::make_unique<boost::uuids::random_generator>();
     }
 
-    return uuids::to_string( ( *s_uuidGenerator )() );
+    return boost::uuids::to_string( ( *s_uuidGenerator )() );
 }
 
 bool UuidGenerator::isUuid( const std::string& string )
 {
-    static const std::regex e( "^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$",
-                               std::regex_constants::icase );
-    return std::regex_match( string, e );
+    try
+    {
+        constexpr boost::uuids::string_generator generator;
+        const auto                               uuid = generator( string );
+        return !to_string( uuid ).empty();
+    }
+    catch (const std::exception& e)
+    {
+        return false;
+    }
 }

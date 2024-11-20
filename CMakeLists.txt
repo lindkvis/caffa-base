@@ -44,7 +44,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${CMAKE_PROJECT_VERSION
 set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION ${CMAKE_PROJECT_VERSION_MAJOR})
 set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${PUBLIC_HEADERS}")
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${Boost_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} Boost::regex)
 if (MSVC)
     target_compile_definitions(${PROJECT_NAME} PRIVATE _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING)
@@ -52,15 +52,13 @@ if (MSVC)
     set_target_properties(${PROJECT_NAME} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 endif ()
 
-add_git_submodule(stduuid TRUE)
-
 if (CAFFA_BUILD_UNIT_TESTS)
     add_subdirectory(Base_UnitTests)
     enable_testing()
     add_test(caffaBase_UnitTests ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/caffaBase_UnitTests)
 endif ()
 
-target_link_libraries(${PROJECT_NAME} stduuid)
+target_link_libraries(${PROJECT_NAME})
 
 install(
         TARGETS ${PROJECT_NAME}

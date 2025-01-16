@@ -44,6 +44,7 @@ if (MSVC)
     target_compile_definitions(${PROJECT_NAME} PRIVATE _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING)
     set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "/W4 /wd4100 /wd4127")
     set_target_properties(${PROJECT_NAME} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+    target_link_libraries(${PROJECT_NAME} bcrypt.lib)
 endif ()
 
 if (CAFFA_BUILD_UNIT_TESTS)
@@ -51,8 +52,6 @@ if (CAFFA_BUILD_UNIT_TESTS)
     enable_testing()
     add_test(caffaBase_UnitTests ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/caffaBase_UnitTests)
 endif ()
-
-target_link_libraries(${PROJECT_NAME})
 
 install(
         TARGETS ${PROJECT_NAME}

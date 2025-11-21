@@ -165,6 +165,22 @@ std::string tolower( std::string data );
 std::string replace( const std::string& data, const std::string& replace, const std::string& with );
 
 /**
+Remove surrounding quotes from a string
+ *
+ * @param string string
+ * @return std::string
+ */
+std::string removeQuotes( const std::string& string );
+
+/**
+Add surrounding quotes from a string
+ *
+ * @param string string
+ * @return std::string
+ */
+std::string addQuotes( const std::string& string );
+
+/**
  * @brief Create a formatted string from any nunber of arguments
  *
  * @tparam Args

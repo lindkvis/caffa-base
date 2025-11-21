@@ -38,6 +38,25 @@ std::string caffa::StringTools::replace( const std::string& data, const std::str
     return out;
 }
 
+std::string caffa::StringTools::removeQuotes( const std::string& string )
+{
+    if ( string.size() >= 2 &&
+         ( ( string.front() == '"' && string.back() == '"' ) || ( string.front() == '\'' && string.back() == '\'' ) ) )
+    {
+        return string.substr( 1, string.size() - 2 );
+    }
+    return string;
+}
+std::string caffa::StringTools::addQuotes( const std::string& string )
+{
+    if ( string.size() >= 2 &&
+         ( ( string.front() == '"' && string.back() == '"' ) || ( string.front() == '\'' && string.back() == '\'' ) ) )
+    {
+        return string;
+    }
+    return "\"" + string + "\"";
+}
+
 std::optional<int64_t> caffa::StringTools::toInt64( const std::string& string )
 {
     char*   endptr;
